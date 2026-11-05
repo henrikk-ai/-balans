@@ -1,4 +1,4 @@
-const CACHE='balans-offline-v2';
+const CACHE='balans-offline-v3';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-180.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('balans-offline-')&&key!==CACHE).map(key=>caches.delete(key)))),self.clients.claim()]));});
