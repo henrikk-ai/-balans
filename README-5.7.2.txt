@@ -1,0 +1,1 @@
+Balans 5.7.2: Rattat 30-dagarsdiagram till 30 kolumner och uppdateringskontroll av service worker. Ersatt index.html och service-worker.js i GitHub-repots rot. Behall ovriga filer. Rensa INTE webbplatsdata. Lokal lagringsnyckel balans_v1 ar oforandrad.
