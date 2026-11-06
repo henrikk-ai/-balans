@@ -14,3 +14,4 @@
 - Om API:t inte svarar påverkas inte AI-fotoanalysen eller befintlig offline-sökning.
 - Datakälla: Livsmedelsverkets Livsmedelsdatabas version 2026-07-01, CC BY 4.0. https://soknaringsinnehall.livsmedelsverket.se/
 - Lokal lagringsnyckel `balans_v1` är oförändrad.
+
