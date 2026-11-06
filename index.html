@@ -138,7 +138,7 @@ header .tag{font-size:9px!important}main{padding-top:8px!important;padding-botto
 
 <details class="compact-details56"><summary>Tidigare måltider</summary><div class="section-title">Måltidshistorik</div><div class="card" id="mealHistory"></div></details></section>
 <section class="view" id="weight"><div class="section-title">Vikt &amp; utveckling</div><div class="card"><form id="weightForm"><div class="form-row"><div><label for="weightDate">Datum</label><input id="weightDate" required="" type="date"/></div><div><label for="weightValue">Vikt (kg)</label><input id="weightValue" max="400" min="20" placeholder="T.ex. 82,5" required="" step="0.1" type="number"/></div></div><button class="btn" style="margin-top:16px;width:100%">Registrera vikt</button></form></div><div class="card"><div class="eyebrow">Viktkurva</div><canvas class="chart" id="weightChart"></canvas><div class="muted" id="weightChange"></div></div><details class="compact-details56"><summary>Tidigare vägningar</summary><div class="section-title">Tidigare vägningar</div><div class="card" id="weightHistory"></div></details></section>
-<section class="view" id="analysis"><div class="section-title">Din analys <span class="analysis-period57"><button type="button" class="selected" data-period57="7" onclick="setAnalysisPeriod57(7)">7 dagar</button><button type="button" data-period57="30" onclick="setAnalysisPeriod57(30)">30 dagar</button></span></div>
+<section class="view" id="analysis"><div class="section-title">Din analys <span class="analysis-period57"><button type="button" class="selected" data-period57="7">7 dagar</button><button type="button" data-period57="30">30 dagar</button></span></div>
 <div class="analysis-grid564"><div class="card"><div class="eyebrow">Snittenergi / loggad dag</div><div class="analysis-number564" id="analysisKcal564">–</div><div class="muted" id="analysisDays564">Ingen registrering</div></div><div class="card"><div class="eyebrow">Snittprotein / loggad dag</div><div class="analysis-number564" id="analysisProtein564">–</div><div class="muted" id="analysisProteinNote564">Baserat på registrerade värden</div></div></div>
 <div class="card analysis-compact564"><div class="row"><strong>Energi per dag</strong><span class="muted">kcal</span></div><div class="analysis-bars564" id="analysisBars564"></div><div class="analysis-axis564" id="analysisAxis564"></div></div>
 <div class="card analysis-compact564"><div class="row"><strong>Viktutveckling</strong><strong id="analysisWeight564">–</strong></div><div class="muted" id="analysisWeightNote564">Registrera vikt för att se utvecklingen.</div></div>
@@ -392,6 +392,7 @@ sync();
 (function(){
 let analysisPeriod57=7;
 function setAnalysisPeriod57(n){analysisPeriod57=n;document.querySelectorAll('[data-period57]').forEach(b=>b.classList.toggle('selected',Number(b.dataset.period57)===n));updateAnalysis564()}
+document.querySelectorAll('[data-period57]').forEach(button=>button.addEventListener('click',()=>setAnalysisPeriod57(Number(button.dataset.period57))));
 function updateAnalysis564(){
  if(typeof data==='undefined'||typeof today!=='function')return;
  const now=new Date();now.setHours(12,0,0,0);
