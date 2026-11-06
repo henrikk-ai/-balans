@@ -25,26 +25,15 @@ async function slvList(){
 }
 function slvNutrients(rows){
  if(!Array.isArray(rows))throw Error('Okänt näringsformat');
- const code=x=>String(x.euroFIRkod??x.EuroFIRkod??'').toUpperCase();
- const name=x=>String(x.namn??x.Namn??'');
- const unit=x=>String(x.enhet??x.Enhet??x.unit??x.Unit??'').trim().toLowerCase();
- const number=x=>{
-  if(!x)return null;
-  const raw=x.varde??x.Varde;
+ const by=(codes,patterns)=>{
+  const item=rows.find(x=>codes.includes(String(x.euroFIRkod??x.EuroFIRkod??'').toUpperCase()))||rows.find(x=>patterns.some(p=>p.test(String(x.namn??x.Namn??''))));
+  if(!item)return null;
+  const raw=item.varde??item.Varde;
   if(raw===null||raw===undefined||raw==='')return null;
   const n=Number(String(raw).replace(',','.'));
   return Number.isFinite(n)&&n>=0?n:null;
  };
- const by=(codes,patterns)=>number(rows.find(x=>codes.includes(code(x)))||rows.find(x=>patterns.some(p=>p.test(name(x)))));
- // Never treat kJ as kcal. Prefer an explicitly kcal-labelled record;
- // otherwise convert a kJ record using the exact SI conversion.
- const isKcal=x=>/kcal|kilokalori/i.test(name(x))||/kcal|kilokalori/i.test(unit(x));
- const isKj=x=>/\bkj\b|kilojoule/i.test(name(x))||/\bkj\b|kilojoule/i.test(unit(x));
- const kcalRow=rows.find(x=>/energi/i.test(name(x))&&isKcal(x))||rows.find(x=>code(x)==='ENERCC'&&!isKj(x));
- const kjRow=rows.find(x=>/energi/i.test(name(x))&&isKj(x))||rows.find(x=>code(x)==='ENERC'&&!isKcal(x));
- const kcal=number(kcalRow),kj=number(kjRow);
- const calories=kcal!==null?kcal:kj!==null?Math.round(kj/4.184*10)/10:null;
- return {calories,protein:by(['PROT'],[/^Protein/i]),carbs:by(['CHOAVL'],[/^Kolhydrater/i]),fat:by(['FAT'],[/^Fett(,|$| )/i])};
+ return {calories:by(['ENERC'],[/^Energi \(kcal\)/i,/^Energi kcal/i]),protein:by(['PROT'],[/^Protein/i]),carbs:by(['CHOAVL'],[/^Kolhydrater/i]),fat:by(['FAT'],[/^Fett(,|$| )/i])};
 }
 
 export default {async fetch(req,env){const origin=req.headers.get('Origin')||'',headers=cors(origin,env);if(req.method==='OPTIONS')return new Response(null,{status:204,headers});const u=new URL(req.url);if(u.pathname==='/health'&&req.method==='GET')return response({ok:true,service:'balans-ai-v5'},200,headers);if(u.pathname.startsWith('/api/slv/')){
