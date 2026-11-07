@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html lang="sv"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/><meta content="#183f34" name="theme-color"/><meta content="yes" name="apple-mobile-web-app-capable"/><meta content="default" name="apple-mobile-web-app-status-bar-style"/><meta content="Balans" name="apple-mobile-web-app-title"/><meta content="Privat matdagbok, viktkurva och hälsocoach – även offline." name="description"/><link href="./manifest.webmanifest" rel="manifest"/><link href="./icon-180.png" rel="apple-touch-icon"/><link href="./icon-192.png" rel="icon" sizes="192x192" type="image/png"/><title>Balans 5.8.3 – Automatisk steghämtning</title><style>
+:root{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#183d34;background:#f5f5ef}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #8dbd9d}header{background:#183f34;color:white;padding:26px 20px 30px;border-radius:0 0 28px 28px}header .top{display:flex;justify-content:space-between;align-items:center;max-width:700px;margin:auto}.brand{font-size:24px;font-weight:800;letter-spacing:-.7px}.brand span{color:#b9dfb3}.tag{font-size:12px;color:#c3d8ca}.hero{max-width:700px;margin:22px auto 0}.hero h1{font-size:28px;margin:0 0 8px}.hero p{color:#d5e5da;margin:0;line-height:1.5}main{max-width:700px;margin:auto;padding:18px 16px 110px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.card{background:#fff;border-radius:19px;padding:18px;box-shadow:0 3px 18px #123a2910;margin-bottom:13px}.grid .card{margin-bottom:0}.eyebrow{font-size:12px;color:#71837a;font-weight:700;text-transform:uppercase;letter-spacing:.6px}.big{font-size:29px;font-weight:800;margin:7px 0}.muted{color:#71837a;font-size:13px}.progress{height:9px;border-radius:9px;background:#e7eee8;overflow:hidden;margin:12px 0}.progress i{display:block;height:100%;background:#68a887;border-radius:9px}.section-title{font-size:19px;font-weight:800;margin:22px 2px 13px;display:flex;justify-content:space-between;align-items:center}.btn{background:#1d5947;color:#fff;border:0;padding:12px 16px;border-radius:12px;font-weight:700}.btn.secondary{background:#e7f0e9;color:#21513e}.btn.ghost{background:transparent;color:#21513e;padding:8px}.btn.danger{background:#fff0ec;color:#a44331}.btn:disabled{opacity:.5}.actions{display:flex;gap:8px;flex-wrap:wrap}.item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #edf1ed}.item:last-child{border:0}.item strong{display:block;margin-bottom:4px}.pill{font-size:12px;background:#e7f2e8;border-radius:20px;padding:6px 9px;color:#28533d}.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e4eae5;display:flex;justify-content:center;padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:10}.nav-inner{width:min(700px,100%);display:grid;grid-template-columns:repeat(5,1fr)}.nav button{border:0;background:none;color:#74877d;font-size:11px;padding:7px 0}.nav button b{display:block;font-size:22px;margin-bottom:4px}.nav button.active{color:#1c6047;font-weight:800}.view{display:none}.view.active{display:block}label{display:block;font-size:13px;font-weight:700;margin:13px 0 6px}input,textarea,select{width:100%;border:1px solid #d7e1d8;border-radius:11px;padding:12px;background:#fff;color:#173e32}textarea{min-height:90px;resize:vertical}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.notice{font-size:13px;line-height:1.55;background:#eef4ed;padding:14px;border-radius:13px;color:#476452}.coach{background:#e7f1e7;border-radius:16px;padding:17px;line-height:1.6}.chat{display:flex;flex-direction:column;gap:10px;max-height:340px;overflow:auto;padding:6px 0 12px}.bubble{max-width:88%;padding:12px 15px;border-radius:16px;line-height:1.5;font-size:14px;background:#e8f1e8;align-self:flex-start}.bubble.user{background:#1e5b48;color:white;align-self:flex-end}.chart{width:100%;height:210px;display:block}.empty{text-align:center;padding:24px;color:#72847a}.small{font-size:12px}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.water{display:flex;align-items:center;gap:12px}.water button{font-size:20px;border:0;border-radius:50%;width:36px;height:36px;background:#e8f1e8;color:#21513e}.footer{font-size:12px;color:#71837a;line-height:1.5;margin:20px 2px}details{margin-top:12px}summary{cursor:pointer;font-weight:700}#toast{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);background:#183f34;color:white;border-radius:12px;padding:10px 18px;display:none;z-index:20;white-space:nowrap}@media(min-width:600px){.hero h1{font-size:34px}}
+
+/* Balans 5.4: streamlined photo-first UX */
+header .hero{padding-top:12px!important;padding-bottom:22px!important}header .hero h1{font-size:clamp(25px,6vw,34px)!important;margin-bottom:5px!important}header .hero p{font-size:14px!important;line-height:1.35!important}header .top{padding-bottom:7px!important}.brand-icon{width:40px!important;height:40px!important}
+.manual-meal54{margin:12px 0 18px;border:1px solid #d9e6dc;border-radius:20px;background:#fff;overflow:hidden}.manual-meal54>summary{padding:17px 18px;cursor:pointer;font-size:15px;font-weight:750;color:#194d3c;list-style:none}.manual-meal54>summary::-webkit-details-marker{display:none}.manual-meal54>summary:after{content:'⌄';float:right;font-size:19px}.manual-meal54[open]>summary:after{content:'⌃'}.manual-meal54>.card{margin:0!important;border:0!important;box-shadow:none!important;border-top:1px solid #e4eee6!important}.manual-meal54 .section-title{font-size:19px!important}
+#food .item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;padding:15px 0!important;border-bottom:1px solid #e8eee9}#food .item strong{font-size:15px!important;line-height:1.3;display:block}#food .item .muted{font-size:12px!important;line-height:1.45;margin-top:4px}#food .item .actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end}#food .item .actions .btn{padding:9px 11px!important;font-size:12px!important;border-radius:12px!important}#food .item .actions .ghost{padding:3px 8px!important;font-size:12px!important}#food #aiReview53{margin-bottom:8px}.nav-inner button b{font-size:22px!important;line-height:1.25}.nav-inner button{font-size:11px!important}#food .food-intro{font-size:12px!important;letter-spacing:.1em}
+</style><style>
+.smart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.smart-grid button{background:#edf4ee;border:1px solid #d5e6d9;color:#1b4d3a;border-radius:12px;padding:11px;text-align:left;font-size:13px}.smart-grid button strong{display:block}.mini-bars{display:flex;align-items:end;gap:7px;height:120px;padding:10px 0 0}.mini-bars>div{flex:1;min-width:0;text-align:center;font-size:10px;color:#71837a}.mini-bars i{display:block;background:#76aa89;border-radius:6px 6px 2px 2px;min-height:3px;margin-bottom:6px}.statline{padding:8px 0;border-bottom:1px solid #e9eee9;font-size:14px}.statline:last-child{border:0}.tinyhint{font-size:12px;color:#687b70;line-height:1.5}.backup-alert{border-left:4px solid #d7a64b;background:#fff8e8;padding:12px;border-radius:10px;margin:10px 0}.suggestion{padding:10px 0;border-bottom:1px solid #e8eee9}.suggestion:last-child{border:0}
+</style><style>
+/* Balans 5.2 visual refresh – no data or API changes */
+:root{--forest:#164b3c;--ink:#173b32;--mint:#e7f1e9;--cream:#f8f7f1;--accent:#d5ad78}
+body{background:var(--cream);color:var(--ink)}
+header{background:linear-gradient(135deg,#103f34 0%,#21654e 100%);border-radius:0 0 32px 32px;box-shadow:0 12px 32px rgba(21,63,47,.12)}
+header .hero h1{letter-spacing:-.04em} .brand{letter-spacing:-.035em}
+main{padding-bottom:115px}
+.card{border:1px solid rgba(25,76,57,.07);border-radius:25px;box-shadow:0 10px 32px rgba(24,61,52,.055)}
+.section-title{letter-spacing:-.035em}
+.btn{border-radius:16px;min-height:49px;font-weight:750;transition:transform .15s ease,box-shadow .15s ease}
+.btn:active{transform:scale(.985)}
+input,textarea,select{border-radius:15px!important}
+.nav{box-shadow:0 -7px 26px rgba(21,62,49,.06);background:rgba(255,255,255,.97)}
+.nav button.active{color:#15543f}
+.photo-start{margin:0 0 18px;padding:22px;background:linear-gradient(145deg,#e8f3e9,#fff9ee);border:1px solid #d6e6d8;border-radius:26px;box-shadow:0 12px 28px rgba(23,72,51,.07)}
+.photo-start .photo-icon{font-size:35px;margin-bottom:6px}
+.photo-start h2{font-size:24px;line-height:1.18;letter-spacing:-.045em;margin:0 0 8px}
+.photo-start p{color:#61796e;margin:0 0 15px;line-height:1.5}
+.photo-start .btn{display:block;width:100%;text-align:center;padding:15px 14px;background:#15583f;color:white;font-size:17px;border-radius:17px}
+.photo-start .small{font-size:12px;color:#667a70;margin-top:12px}
+#food .photo-flow{background:#fff;border:1px solid #dce9df;border-radius:25px;padding:21px;margin-bottom:14px;box-shadow:0 10px 28px rgba(19,73,48,.055)}
+#food .photo-flow strong{font-size:20px;letter-spacing:-.03em}
+#food .photo-flow input[type=file]{width:100%;background:#edf5ed;border:2px dashed #b7d5c2;padding:20px 10px;border-radius:18px}
+#food #aiFoodPanel{background:#eaf4eb;border:1px solid #cfe4d3}
+#food #analyzePhoto5{width:100%;padding:16px;font-size:17px;background:#165640;color:#fff;border-radius:17px}
+#food #photoResult5:not(:empty){background:white;padding:15px;border-radius:14px;line-height:1.5}
+#food .meal-form-card{border:1px solid #e0e9df}
+#food .meal-form-card:before{content:'Granska och spara';display:block;font-weight:800;font-size:21px;letter-spacing:-.03em;margin-bottom:12px}
+#food .secondary-tools{margin-top:18px}
+#food .secondary-tools .card{box-shadow:none}
+#food .food-intro{font-size:13px;color:#6d8075;margin:0 0 12px}
+@media(max-width:390px){.photo-start{padding:18px}.photo-start h2{font-size:22px}}
+.brand{display:flex;align-items:center;gap:10px}.brand-icon{width:35px;height:35px;border-radius:10px;object-fit:cover;flex-shrink:0}.brand span{color:#c78348}</style><style>
+/* Balans 5.3 — compact photo-first flow */
+header{padding-bottom:18px!important}header .hero{margin-top:10px!important}header .hero h1{font-size:25px!important}header .hero p{font-size:14px!important;line-height:1.35!important}header .top{padding-top:14px!important}
+#home .photo-start{padding:22px!important}#home .photo-start .photo-icon{font-size:25px!important;margin-bottom:5px!important}#home .photo-start h2{font-size:25px!important;margin:8px 0!important}#home .photo-start p{font-size:15px!important;line-height:1.45!important;margin:8px 0 16px!important}
+#food .photo-flow{padding:18px!important;margin-bottom:12px!important}#food #photoPreview4 img{max-height:220px;object-fit:cover;border-radius:16px}#food #aiFoodPanel{padding:18px!important}#food #photoResult5{font-size:13px;line-height:1.5}#food #photoResult5.ai-success53{display:none}
+.photo-archive53{margin-top:14px;border-top:1px solid #dce9e0;padding-top:12px}.photo-archive53 summary{cursor:pointer;font-size:13px;color:#476e5b;font-weight:650}.photo-archive53 button{margin-top:10px!important}
+.ai-review53{background:#fff;border:1px solid #dbe8df;border-radius:24px;padding:20px;margin:12px 0 16px;box-shadow:0 12px 35px #123a2912}.ai-review53[hidden]{display:none!important}.review-top53{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.review-kicker53{font-size:12px;font-weight:850;letter-spacing:1px;color:#b67641}.review-pill53{background:#edf5ed;border-radius:100px;padding:6px 10px;font-size:11px;color:#39654d}.ai-review53 h3{font-size:21px;line-height:1.25;margin:15px 0 17px;color:#153e30}.review-grid53{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.review-grid53>div{background:#f2f6f0;border-radius:16px;padding:14px 12px;min-width:0}.review-grid53 small{display:block;font-size:10px;letter-spacing:.6px;font-weight:800;color:#72857a;margin-bottom:8px}.review-grid53 strong{font-size:23px;color:#163e30}.review-note53{font-size:12px;color:#65786d;line-height:1.5;margin:14px 0}.review-save53{width:100%;padding:16px!important;font-size:18px!important;background:#155b45!important}.review-edit53{display:block;width:100%;border:0;background:transparent;color:#235c46;font-weight:750;padding:16px 5px;cursor:pointer}
+#food .meal-form-card{scroll-margin-top:15px}#food #aiFoodPanel{scroll-margin-top:12px}
+.nav button b{font-family:system-ui, sans-serif!important}
+</style><style>
+/* Balans 5.6 – compact navigation and progressive disclosure */
+header{padding:10px 18px 8px!important}header .hero{padding:6px 0!important;margin:0!important}header .hero h1{font-size:22px!important;margin:0 0 2px!important}header .hero p{display:none!important}header .top{margin-bottom:3px!important}.tag{font-size:10px!important}
+main{padding-top:10px!important}.section-title{margin:15px 0 9px!important;font-size:20px!important}.card{padding:15px!important;margin-bottom:10px!important;border-radius:18px!important}.grid{gap:10px!important}.big{font-size:26px!important}.eyebrow{font-size:11px!important}.muted{font-size:12px!important}.actions{gap:7px!important}.btn{padding:11px 13px!important;font-size:14px!important;border-radius:12px!important} .nav{box-shadow:0 -2px 12px #00000009!important}
+#home .grid .card{min-width:0}#home .grid .big{font-size:clamp(20px,5vw,29px)!important}#home .grid .muted{font-size:11px!important}#home .section-title{font-size:16px!important}
+.compact-details56{background:#fff;border:1px solid #e0e9e3;border-radius:16px;margin:10px 0;overflow:hidden}.compact-details56>summary{cursor:pointer;list-style:none;padding:15px 17px;font-weight:700;color:#1c483b;display:flex;justify-content:space-between;align-items:center}.compact-details56>summary:after{content:'⌄';font-size:20px}.compact-details56[open]>summary:after{content:'⌃'}.compact-details56>summary::-webkit-details-marker{display:none}.compact-details56>.card,.compact-details56>.coach,.compact-details56>.section-title,.compact-details56>.notice,.compact-details56>.grid,.compact-details56>.footer{margin:8px 12px 12px!important}.compact-details56>.section-title{display:none}
+.food-modes56{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0 13px}.mode-btn56{border:1px solid #d8e5dd;background:#edf3ee;color:#245443;border-radius:12px;padding:12px 4px;font-size:13px;font-weight:700}.mode-btn56.selected{background:#1d5947;color:white;border-color:#1d5947}.mode-panel56[hidden]{display:none!important}.mode-panel56>.photo-flow,.mode-panel56>.card,.mode-panel56>.manual-meal54{margin:0 0 10px!important}.mode-panel56>.photo-flow{padding:13px!important}.mode-panel56 .photo-flow p{margin:5px 0!important}.mode-panel56 #foodTools54{margin:9px 0!important}.mode-panel56 #manualMeal54{margin:0!important}.mode-panel56 #manualMeal54[open]>summary{display:none}.mode-panel56 #manualMeal54:not([open]){display:none}
+#weight .card{margin-bottom:10px!important}#coach .card{margin-bottom:10px!important}#stats>.card{margin-bottom:8px!important}#stats>.compact-details56{margin-top:10px}
+@media(max-width:390px){#home .actions .btn{padding:10px 7px!important;font-size:12px!important}#home .actions{flex-wrap:wrap}.mode-btn56{font-size:12px}}
+</style><style>
+/* Balans 5.6.1 - extra compact home on iPhone */
+#home .grid{gap:8px!important}
+#home .grid .card{padding:12px 12px 10px!important;min-height:0!important;border-radius:15px!important}
+#home .grid .eyebrow{font-size:10px!important;letter-spacing:.2px!important}
+#home .grid .big{font-size:clamp(20px,5vw,25px)!important;margin:4px 0!important;line-height:1.15!important}
+#home .grid .muted{font-size:10px!important;line-height:1.3!important}
+#home .progress{height:5px!important;margin:8px 0 0!important}
+#home>.section-title{margin:12px 1px 6px!important;font-size:14px!important}
+#home>.card{padding:11px 12px!important;margin-bottom:8px!important}
+#home>.card>.actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px!important}
+#home>.card>.actions .btn{font-size:12px!important;padding:10px 3px!important;white-space:nowrap!important}
+#home .home-water-row{border-top:1px solid #e7eee8;padding-top:9px;margin-top:9px!important;gap:5px!important}
+#home .home-water-row strong{font-size:13px!important}
+#home .home-water-row .muted{font-size:10px!important}
+#home .water{gap:7px!important;white-space:nowrap!important}
+#home .water button{width:32px!important;height:32px!important;font-size:18px!important}
+#home .compact-details56{margin:7px 0!important;border-radius:13px!important}
+#home .compact-details56>summary{padding:11px 13px!important;font-size:13px!important;min-height:42px!important}
+#home .compact-details56>summary:after{font-size:17px!important}
+@media(max-width:360px){#home>.card>.actions .btn{font-size:11px!important}#home .home-water-row .muted{display:none!important}}
+</style><style>/* Balans 5.6.2: compact photo-first registration, no change to data/AI logic */
+#food .compact-photo562{padding:15px!important;margin-bottom:8px!important;border-radius:20px!important}
+#food .compact-photo-head562 strong{font-size:18px!important;line-height:1.25;display:block}
+#food .compact-photo-head562 p{font-size:13px!important;line-height:1.35!important;margin:3px 0 12px!important}
+#food .compact-photo562 input[type=file]{padding:10px!important;border-radius:12px!important;font-size:13px!important;min-height:52px;background:#eef5ee}
+#food .compact-preview562:empty{display:none}
+#food .compact-preview562:not(:empty){margin-top:8px}
+#food .compact-preview562 img{max-height:160px!important;object-fit:cover}
+#food .compact-consent562{display:flex;align-items:center;gap:9px;margin:12px 0 9px;font-size:13px;line-height:1.3;font-weight:600}
+#food .compact-consent562 input{width:19px!important;height:19px;flex:0 0 19px;margin:0}
+#food .compact-analyze562{width:100%;min-height:44px!important;padding:10px!important;font-size:15px!important}
+#food .compact-photo562 #photoResult5:empty{display:none}
+#food .compact-photo562 #photoResult5{margin:8px 0!important;font-size:13px}
+#food .compact-photo562 .photo-archive53{margin-top:10px;padding-top:9px}
+#food .compact-photo562 .photo-archive53 summary{font-size:12px}
+#food .food-modes56{margin:5px 0 10px!important}
+#food>.section-title{margin-bottom:8px!important}
+</style><style>/* Balans 5.6.3: compact shared header and photo result */
+header{padding:7px 14px 7px!important;border-radius:0 0 20px 20px!important}
+header .top{margin-bottom:0!important;padding:0!important;min-height:32px}
+header .brand{font-size:19px!important}header .brand-icon{width:29px!important;height:29px!important}
+header .hero{padding:0!important;margin:0!important}header .hero h1{font-size:17px!important;line-height:1.2!important;margin:1px 0 0!important}
+header .tag{font-size:9px!important}main{padding-top:8px!important;padding-bottom:calc(115px + env(safe-area-inset-bottom))!important}
+#food .compact-photo562{padding:12px!important;border-radius:16px!important}
+#food .compact-photo-head562 strong{font-size:16px!important}
+#food .compact-photo-head562 p{font-size:11px!important;margin:2px 0 7px!important}
+#food .compact-photo562 input[type=file]{min-height:42px!important;padding:6px!important}
+#food .compact-preview562:not(:empty){margin-top:5px!important}
+#food .compact-preview562 img{max-height:78px!important;max-width:105px!important;width:auto!important;object-fit:cover!important;border-radius:9px!important}
+#food .compact-consent562{margin:7px 0!important;font-size:12px!important}
+#food .compact-analyze562{min-height:40px!important;padding:8px!important;font-size:13px!important}
+#food .compact-photo562 .photo-archive53{margin-top:6px!important;padding-top:6px!important}
+#food .ai-review53{padding:12px!important;border-radius:16px!important;margin:8px 0 10px!important;scroll-margin-top:8px}
+#food .review-top53{gap:4px!important}#food .review-kicker53{font-size:10px!important}#food .review-pill53{font-size:9px!important;padding:4px 7px!important}
+#food .ai-review53 h3{font-size:17px!important;margin:8px 0!important;line-height:1.2!important}
+#food .review-grid53{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
+#food .review-grid53>div{padding:8px 3px!important;border-radius:10px!important;text-align:center!important}
+#food .review-grid53 small{font-size:8px!important;letter-spacing:0!important;margin-bottom:4px!important;overflow-wrap:anywhere}
+#food .review-grid53 strong{font-size:clamp(12px,3.2vw,17px)!important;white-space:nowrap!important}
+#food .review-note53{font-size:10px!important;line-height:1.3!important;margin:7px 0!important}
+#food .review-save53{font-size:15px!important;padding:11px!important;min-height:44px!important}
+#food .review-edit53{font-size:12px!important;padding:9px 4px!important}
+#food .ai-review53[hidden]{display:none!important}
+#food.photo-reviewed563 .compact-photo-head562 p,#food.photo-reviewed563 .compact-consent562,#food.photo-reviewed563 .compact-analyze562,#food.photo-reviewed563 .photo-archive53{display:none!important}
+#food.photo-reviewed563 .compact-photo562{padding:8px 12px!important}
+#food.photo-reviewed563 .compact-photo-head562 strong{font-size:12px!important}
+#food.photo-reviewed563 .compact-photo562 input[type=file]{min-height:35px!important;padding:4px!important}
+#food.photo-reviewed563 .compact-preview562 img{max-height:50px!important;max-width:65px!important}
+#food.photo-reviewed563 .compact-preview562:not(:empty){margin-top:3px!important}
+@media(max-width:350px){#food .review-grid53 small{font-size:7px!important}#food .review-grid53 strong{font-size:11px!important}}
+</style><style>/* Balans 5.6.4 – analysis replaces coach */
+.analysis-grid564{display:grid;grid-template-columns:1fr 1fr;gap:9px}.analysis-grid564 .card{margin:0!important;min-width:0}.analysis-number564{font-size:23px;font-weight:800;margin:8px 0 4px;color:#184c3a}.analysis-compact564{margin-top:10px}.analysis-bars564{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;align-items:end;height:105px;padding:12px 4px 0}.analysis-bar564{background:#b9d7c2;border-radius:7px 7px 3px 3px;min-height:3px;position:relative}.analysis-bar564.active{background:#246b51}.analysis-bar564.empty{background:#edf1ed;height:3px!important}.analysis-axis564{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;color:#71837a;font-size:11px;margin-top:6px}.analysis-compact564 .row{gap:8px}.analysis-grid564 .eyebrow{line-height:1.35}#analysis .compact-details56{margin-top:10px}@media(max-width:370px){.analysis-number564{font-size:20px}}
+</style></head><body><header><div class="top"><div class="brand"><img alt="Balans symbol" class="brand-icon" src="./icon-180.png"/> Balans<span>.</span></div><div class="tag">Privat på din telefon</div></div><div class="hero"><h1 id="greeting">Hej! 👋</h1><p>Din mat, dina vanor, din balans.</p></div></header><main>
+<section class="view active" id="home"><div id="backupReminder"></div><div class="grid"><div class="card"><div class="eyebrow">Dagens energi</div><div class="big" id="homeCalories">0 kcal</div><div class="muted" id="calorieSub">Registrerat idag</div><div class="progress"><i id="calorieBar" style="width:0%"></i></div></div><div class="card"><div class="eyebrow">Senaste vikt</div><div class="big" id="homeWeight">– kg</div><div class="muted" id="weightSub">Logga din första vikt</div></div></div><div class="card steps-home58"><div class="row"><div><div class="eyebrow">Dagens steg · Apple Hälsa</div><div class="big" id="stepsToday58">– steg</div><div class="muted" id="stepsUpdated58">Kör genvägen för att uppdatera steg</div><div class="steps-goal582"><div class="row"><span id="stepsGoalLabel582">0 av 8 000 steg</span><strong id="stepsGoalPercent582">0 %</strong></div><div class="progress"><i id="stepsGoalBar582" style="width:0%"></i></div></div></div><span aria-hidden="true" style="font-size:27px">👟</span></div></div><details class="compact-details56" id="stepsSyncSettings581"><summary>⚙ Synkning av steg</summary><div class="card"><p class="muted small">Ange samma stegtoken som i din Apple-genväg (STEPS_TOKEN i Cloudflare). Balans hämtar dagens steg automatiskt när appen öppnas. Måltider och vikt skickas inte.</p><label for="stepsSyncCode581">Stegtoken (minst 16 tecken)</label><input id="stepsSyncCode581" type="password" autocomplete="off" placeholder="Din privata stegtoken"/><div class="actions" style="margin-top:8px"><button class="btn secondary" id="stepsSyncSave581" type="button">Spara stegtoken</button><button class="btn secondary" id="stepsSyncNow581" type="button">Synka nu</button></div><p id="stepsSyncStatus581" class="muted small" aria-live="polite">Ingen synkning konfigurerad.</p></div></details><div class="section-title">Snabbregistrering</div><div class="card"><div class="actions"><button class="btn" onclick="go('food')">＋ Måltid</button><button class="btn secondary" onclick="go('food');setFoodMode56('photo')" type="button">📷 Foto</button><button class="btn secondary" onclick="go('weight')">＋ Vikt</button></div><div class="row home-water-row" style="margin-top:8px"><div><strong>Vatten</strong><div class="muted">1 glas = 250 ml</div></div><div class="water"><button onclick="addWater(-1)">−</button><strong id="waterCount">0 glas</strong><button onclick="addWater(1)">＋</button></div></div></div><details class="compact-details56"><summary>Dagens insikt</summary><div class="section-title">Dagens insikt</div><div class="coach" id="dailyTip"></div></details><details class="compact-details56"><summary>Dagens näring</summary><div class="section-title">Dagens näring</div><div class="card" id="nutritionToday51"></div></details><details class="compact-details56"><summary>Dagens måltider</summary><div class="section-title">Dagens måltider</div><div class="card" id="homeMeals"></div></details></section>
+<section class="view" id="food"><div class="section-title">Registrera mat</div><div aria-label="Välj registreringssätt" class="food-modes56" role="group"><button class="mode-btn56 selected" data-mode56="photo" onclick="setFoodMode56('photo')" type="button">📷 AI-foto</button><button class="mode-btn56" data-mode56="search" onclick="setFoodMode56('search')" type="button">⌕ Sök mat</button><button class="mode-btn56" data-mode56="manual" onclick="setFoodMode56('manual')" type="button">✎ Manuellt</button></div><div class="mode-panel56" data-panel56="photo"><section class="photo-flow compact-photo562" aria-label="Analysera måltidsfoto"><div class="compact-photo-head562"><strong>📷 Analysera måltid med AI</strong><p class="muted">Välj ett foto och granska AI:s näringsförslag.</p></div><input accept="image/*" capture="environment" id="photoInput4" type="file" aria-label="Välj måltidsfoto"/><div id="photoPreview4" class="compact-preview562"></div><label class="compact-consent562"><input id="photoConsent5" type="checkbox"/> <span>Jag godkänner att fotot skickas till AI-tjänsten</span></label><button class="btn compact-analyze562" id="analyzePhoto5" type="button">✨ Analysera foto</button><p aria-live="polite" class="muted" id="photoResult5"></p><details class="photo-archive53"><summary>Fler fotoalternativ</summary><button class="btn secondary" id="savePhoto4" type="button">Spara foto med datum</button><div id="photoGallery4"></div><p class="small muted">Foton ingår inte i JSON-säkerhetskopian. De kan raderas om webbplatsdata rensas.</p></details></section></div><div class="mode-panel56" data-panel56="search" hidden=""><div class="card"><strong>Snabbval från livsmedel</strong><p class="tinyhint">Ungefärliga näringsvärden per angiven portion. Kontrollera förpackningen och justera mängden.</p><label for="foodSearch">Sök livsmedel</label><input id="foodSearch" placeholder="Sök t.ex. ägg, havre, banan"/><div class="smart-grid" id="foodMatches" style="margin-top:12px"></div><div class="row" style="margin-top:14px"><strong>Dina favoritmåltider</strong><button class="btn secondary" onclick="saveFavorite()" type="button">Spara nuvarande</button></div><div class="smart-grid" id="favoriteMeals" style="margin-top:10px"></div></div><details class="manual-meal54" id="foodTools54"><summary>⌕  Sök livsmedel och portionshjälp</summary><section class="card"><strong>🥗 Portionshjälp</strong><p class="muted">Välj ett livsmedel från sökningen ovan. Justera portioner genom att ange antal i stället för att gissa ett exakt värde.</p><label for="portionCount4">Antal portioner av valt livsmedel</label><input id="portionCount4" max="10" min="0.25" step="0.25" type="number" value="1"/><p class="small muted">Exempel: 0,5 för halv portion, 2 för dubbel.</p></section><section class="card"><strong>🇸🇪 Sök svenska livsmedel</strong><p class="muted">Offline-lista med ungefärliga värden per 100 g. Du kan även söka förpackade produkter via Open Food Facts när du är online.</p><label for="foodQuery5">Livsmedel eller produktnamn</label><input id="foodQuery5" placeholder="T.ex. havregryn, kvarg, mjölk"/><label for="foodGrams5">Mängd (gram)</label><input id="foodGrams5" max="3000" min="1" type="number" value="100"/><div class="actions" style="margin-top:10px"><button class="btn secondary" id="searchLocal5" type="button">Sök offline</button><button class="btn secondary" id="searchOnline5" type="button">Sök förpackade varor online</button></div><div aria-live="polite" id="foodResults5"></div></section><section class="card" id="slvPanel55" style="border:1px solid #d7e6dc"><strong>🇸🇪 Livsmedelsverkets livsmedelsdatabas</strong><p class="muted">Sök officiella näringsvärden för råvaror och maträtter. Välj rätt livsmedel och ange mängden i gram. AI-fotots portionsstorlek är fortfarande en uppskattning.</p><label for="slvQuery55">Livsmedel</label><input autocomplete="off" id="slvQuery55" placeholder="T.ex. potatis kokt, kycklingfilé"/><label for="slvGrams55">Mängd (gram)</label><input id="slvGrams55" max="3000" min="1" type="number" value="100"/><button class="btn" id="slvSearch55" style="margin-top:12px;width:100%" type="button">Sök hos Livsmedelsverket</button><div class="muted" id="slvStatus55" role="status" style="margin-top:10px"></div><div id="slvResults55"></div><p class="small muted">Källa: Livsmedelsverkets Livsmedelsdatabas, version 2026-07-01 · CC BY 4.0. Näringsvärden avser 100 g ätlig del. <a href="https://soknaringsinnehall.livsmedelsverket.se/" rel="noopener" target="_blank">Om databasen</a>.</p></section></details></div><div class="mode-panel56" data-panel56="manual" hidden=""><details class="manual-meal54" id="manualMeal54"><summary>✎  Registrera manuellt eller justera måltid</summary><div class="card meal-form-card"><div class="notice">Logga måltider eller använd AI-analys (kräver uppkoppling och ditt godkännande). Näringsvärden är uppskattningar.</div><form id="mealForm"><label for="mealDate">Datum</label><input id="mealDate" required="" type="date"/><label for="mealType">Måltid</label><select id="mealType"><option>Frukost</option><option>Lunch</option><option>Middag</option><option>Mellanmål</option></select><label for="mealName">Vad åt du?</label><textarea id="mealName" placeholder="T.ex. havregrynsgröt med bär och mjölk" required=""></textarea><div class="form-row"><div><label for="mealCalories">Energi (kcal)</label><input id="mealCalories" max="10000" min="0" placeholder="Valfritt" type="number"/></div><div><label for="mealProtein">Protein (g)</label><input id="mealProtein" max="500" min="0" placeholder="Valfritt" step="0.1" type="number"/></div></div><div class="form-row"><div><label for="mealCarbs">Kolhydrater (g)</label><input id="mealCarbs" max="1000" min="0" placeholder="Valfritt" step="0.1" type="number"/></div><div><label for="mealFat">Fett (g)</label><input id="mealFat" max="500" min="0" placeholder="Valfritt" step="0.1" type="number"/></div></div><div class="actions" style="margin-top:16px"><button class="btn" id="mealSubmit51" style="flex:1">Spara måltid</button><button class="btn secondary" id="cancelMealEdit51" style="display:none" type="button">Avbryt redigering</button></div><p aria-live="polite" class="muted" id="mealEditHint51"></p></form></div></details></div><section aria-label="Granska AI-förslag" class="ai-review53" hidden="" id="aiReview53"><div class="review-top53"><span class="review-kicker53">✦ AI-FÖRSLAG</span><span class="review-pill53">Granska före sparning</span></div><h3 id="reviewMeal53">Din måltid</h3><div class="review-grid53"><div><small>ENERGI</small><strong id="reviewCalories53">–</strong></div><div><small>PROTEIN</small><strong id="reviewProtein53">–</strong></div><div><small>KOLHYDRATER</small><strong id="reviewCarbs53">–</strong></div><div><small>FETT</small><strong id="reviewFat53">–</strong></div></div><p class="review-note53">AI-värden är uppskattningar. Kontrollera maten och portionsstorleken.</p><button class="btn review-save53" id="quickSave53" type="button">✓ Spara måltid</button><button class="review-edit53" id="reviewEdit53" type="button">Justera namn, mängder eller måltidstyp</button></section>
+
+<details class="compact-details56"><summary>Tidigare måltider</summary><div class="section-title">Måltidshistorik</div><div class="card" id="mealHistory"></div></details></section>
+<section class="view" id="weight"><div class="section-title">Vikt &amp; utveckling</div><div class="card"><form id="weightForm"><div class="form-row"><div><label for="weightDate">Datum</label><input id="weightDate" required="" type="date"/></div><div><label for="weightValue">Vikt (kg)</label><input id="weightValue" max="400" min="20" placeholder="T.ex. 82,5" required="" step="0.1" type="number"/></div></div><button class="btn" style="margin-top:16px;width:100%">Registrera vikt</button></form></div><div class="card"><div class="eyebrow">Viktkurva</div><canvas class="chart" id="weightChart"></canvas><div class="muted" id="weightChange"></div></div><details class="compact-details56"><summary>Tidigare vägningar</summary><div class="section-title">Tidigare vägningar</div><div class="card" id="weightHistory"></div></details></section>
+<section class="view" id="analysis"><div class="section-title">Din analys <span class="analysis-period57"><button type="button" class="selected" data-period57="7">7 dagar</button><button type="button" data-period57="30">30 dagar</button></span></div>
+<div class="analysis-grid564"><div class="card"><div class="eyebrow">Snittenergi / loggad dag</div><div class="analysis-number564" id="analysisKcal564">–</div><div class="muted" id="analysisDays564">Ingen registrering</div></div><div class="card"><div class="eyebrow">Snittprotein / loggad dag</div><div class="analysis-number564" id="analysisProtein564">–</div><div class="muted" id="analysisProteinNote564">Baserat på registrerade värden</div></div></div>
+<div class="card analysis-compact564"><div class="row"><strong>Energi per dag</strong><span class="muted">kcal</span></div><div class="analysis-bars564" id="analysisBars564"></div><div class="analysis-axis564" id="analysisAxis564"></div></div>
+<div class="card analysis-compact564"><div class="row"><strong>Steg per dag</strong><span class="muted" id="stepsAverage58">–</span></div><div class="analysis-bars564" id="stepsBars58"></div><div class="analysis-axis564" id="stepsAxis58"></div><p class="muted small" id="stepsNote58" style="margin:7px 0 0">Synkas när genvägen körs.</p></div><div class="card analysis-compact564"><div class="row"><strong>Viktutveckling</strong><strong id="analysisWeight564">–</strong></div><div class="muted" id="analysisWeightNote564">Registrera vikt för att se utvecklingen.</div></div>
+<details class="compact-details56"><summary>Om beräkningarna</summary><div class="notice">Värdena bygger endast på dina egna registreringar på den här telefonen. Snittet beräknas över dagar då du har loggat mat. Saknade näringsvärden räknas inte som noll. Ingen AI-coach används här.</div></details>
+<div id="legacyCoach564" hidden><div class="section-title">Din coach</div><div class="card"><strong>Fråga din coach</strong><div aria-live="polite" class="chat" id="chatLog"></div><form id="chatForm"><label for="chatInput">Vad vill du ha hjälp med?</label><input id="chatInput" placeholder="T.ex. Jag är hungrig på kvällen" required=""/><button class="btn" style="width:100%;margin-top:10px">Få ett tips</button></form><div class="actions" style="margin-top:12px"><button class="btn secondary" onclick="quickAsk('Tips på mättande frukost')">Frukost</button><button class="btn secondary" onclick="quickAsk('Hur håller jag motivationen?')">Motivation</button><button class="btn secondary" onclick="quickAsk('Hur kan jag äta mer protein?')">Protein</button></div></div><details class="compact-details56"><summary>AI-inställningar och offlinehjälp</summary><div class="notice" style="margin-bottom:12px">Balans 5.2: välj AI-coach online eller fortsätt med offline-coachen. Endast information du aktivt väljer att skicka lämnar telefonen.</div><div class="card"><div class="notice">Offline-coachen fungerar alltid. AI-coachen kräver en konfigurerad Cloudflare Worker, internet och ditt godkännande. Ingen medicinsk rådgivning.</div><div class="section-title" style="margin-top:18px">Din veckoreflektion</div><div class="coach" id="coachInsight"></div></div><div class="card"><strong>✨ AI-coach online</strong><p class="muted">Enbart din fråga skickas som standard. Du kan välja att skicka en kort sammanfattning av de senaste sju dagarnas måltider och vikt.</p><label for="aiQuestion5">Din fråga</label><textarea id="aiQuestion5" placeholder="Hur kan jag få mer protein till frukost?"></textarea><label><input id="aiContext5" style="width:auto" type="checkbox"/> Skicka även en sammanfattning av mina senaste 7 dagar</label><label><input id="aiConsent5" style="width:auto" type="checkbox"/> Jag godkänner att dessa uppgifter skickas till AI-tjänsten</label><button class="btn" id="askAI5" type="button">Fråga AI-coachen</button><div aria-live="polite" class="coach" id="aiAnswer5" style="margin-top:12px;white-space:pre-wrap">Offline-coachen nedan fungerar utan internet.</div></div></details></div>
+</section>
+<section class="view" id="stats"><div class="card"><strong>Senaste 7 dagarna</strong><p class="tinyhint">Energi från registrerade måltider. Saknade värden räknas inte som noll i bedömningen.</p><div class="mini-bars" id="energyBars"></div><div id="weekSummary"></div></div><details class="compact-details56"><summary>Vikttrend</summary><div class="card"><strong>Vikttrend</strong><div class="statline" id="trendSummary"></div><p class="tinyhint">Enstaka vägningar kan variera på grund av vätska. Följ trenden över tid.</p></div></details><details class="compact-details56"><summary>Inställningar, profil och säkerhetskopia</summary><div class="card"><strong>🔒 AI-anslutning (valfri)</strong><p class="muted">Dina registreringar ligger kvar på telefonen. För AI krävs en separat säker serverfunktion. Skriv aldrig in en OpenAI API-nyckel här.</p><label for="workerUrl5">Cloudflare Worker-adress (HTTPS)</label><input id="workerUrl5" placeholder="https://balans-ai.dittkonto.workers.dev" type="url"/><label for="familyCode5">Familjens åtkomstkod</label><input autocomplete="off" id="familyCode5" placeholder="Hemlig kod som ställs in på servern" type="password"/><div class="actions" style="margin-top:12px"><button class="btn secondary" id="saveAISettings5" type="button">Spara AI-inställningar på telefonen</button><button class="btn ghost" id="testAI5" type="button">Testa anslutningen</button></div><p class="muted" id="aiStatus5"></p><p class="small muted">Koden sparas lokalt på den här telefonen. Dela den endast med familjen. Använd aldrig en kod du använder till andra konton.</p></div><div class="section-title">Statistik &amp; inställningar</div><div class="notice" style="margin-bottom:14px"><strong>Privat familjeapp:</strong> Alla använder samma app men varje telefon sparar sina egna registreringar. Ingen automatisk synkronisering sker. Efter första besöket via HTTPS fungerar appen även offline. Exportera gärna en säkerhetskopia regelbundet. Att radera webbläsardata kan radera dina registreringar.</div><div class="grid"><div class="card"><div class="eyebrow">Måltider / 7 dagar</div><div class="big" id="statMeals">0</div></div><div class="card"><div class="eyebrow">Dagar med logg / 7</div><div class="big" id="statDays">0</div></div><div class="card"><div class="eyebrow">Protein idag</div><div class="big" id="statProtein">–</div></div><div class="card"><div class="eyebrow">Viktförändring</div><div class="big" id="statWeight">–</div></div></div><div class="section-title">Familjeutmaningar – privata</div><div class="card"><p class="muted">Välj en vänlig vardagsutmaning. Varje familjemedlem kan välja samma utmaning på sin egen telefon, men inga resultat delas automatiskt.</p><label for="challenge4">Min utmaning</label><select id="challenge4"><option value="">Ingen vald</option><option value="veg">Grönsaker till en måltid</option><option value="walk">En promenad eller annan rörelse</option><option value="water">Kom ihåg att dricka under dagen</option><option value="regular">Ät regelbundet</option></select><div class="actions" style="margin-top:12px"><button class="btn secondary" id="challengeDone4" type="button">Markera dagens utmaning klar</button></div><p class="muted" id="challengeStatus4"></p></div><div class="section-title">Din profil</div><div class="card"><form id="settingsForm"><label for="profileName">Namn (frivilligt)</label><input id="profileName" maxlength="40" placeholder="Ditt namn"/><label for="profileGoal">Personligt viktmål i kg (frivilligt)</label><input id="profileGoal" max="400" min="20" placeholder="Valfritt" step="0.1" type="number"/><label for="profileCalories">Dagligt energiriktmärke i kcal (frivilligt)</label><input id="profileCalories" max="5000" min="1000" placeholder="Inget standardmål" step="50" type="number"/><p class="muted">Sätt endast ett energimål som är lämpligt för dig. Appen beräknar inte individuella energibehov.</p><button class="btn" style="width:100%">Spara inställningar</button></form></div><div class="section-title">Din data</div><div class="card"><p class="muted">All information sparas lokalt i den här webbläsaren på enheten. Ingen inloggning eller molnsynk ingår. Rensad webbläsardata kan radera loggen.</p><div class="actions"><button class="btn secondary" onclick="exportData()">↓ Exportera JSON</button><button class="btn secondary" onclick="document.getElementById('importFile').click()">↑ Importera JSON</button><input accept="application/json,.json" hidden="" id="importFile" type="file"/><button class="btn danger" onclick="clearData()">Radera allt</button></div></div><p class="footer">Balans är ett hjälpmedel för vanor och egen uppföljning, inte medicinsk rådgivning. Vikt och energi varierar naturligt. Vid graviditet, ätstörning eller medicinska tillstånd bör individuella råd ges av vårdpersonal.</p></details></section>
+</main><nav aria-label="Huvudmeny" class="nav"><div class="nav-inner"><button class="active" data-tab="home" onclick="go('home')"><b>⌂</b>Idag</button><button data-tab="food" onclick="go('food')"><b>📷</b>Mat</button><button data-tab="weight" onclick="go('weight')"><b>⚖</b>Vikt</button><button data-tab="analysis" onclick="go('analysis')"><b>▥</b>Analys</button><button data-tab="stats" onclick="go('stats')"><b>▥</b>Statistik</button></div></nav><div id="toast" role="status"></div>
+<script>
+const KEY='balans_v1';const blank=()=>({meals:[],weights:[],water:{},profile:{name:'',goal:'',calories:''},chat:[]});let data;try{data=JSON.parse(localStorage.getItem(KEY))||blank()}catch{data=blank()}data={...blank(),...data};function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}function today(){let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}function dateDaysAgo(n){let d=new Date();d.setDate(d.getDate()-n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}function fmt(n){return Number(n).toLocaleString('sv-SE',{maximumFractionDigits:1})}function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function toast(s){let t=document.getElementById('toast');t.textContent=s;t.style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.style.display='none',2300)}function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));window.scrollTo(0,0);render()}function addWater(n){data.water[today()]=Math.max(0,(data.water[today()]||0)+n);save()}
+function mealMarkup(m){return `<div class="item"><div><strong>${escapeHTML(m.name)}</strong><div class="muted">${escapeHTML(m.date)} · ${escapeHTML(m.type)}${m.calories!==null?' · '+fmt(m.calories)+' kcal':''}${m.protein!==null?' · '+fmt(m.protein)+' g protein':''}</div></div><div class="actions"><button class="btn secondary" type="button" onclick="editMeal51('${m.id}')">Redigera</button><button class="btn ghost" aria-label="Ta bort måltid" onclick="removeEntry('meals','${m.id}')">✕</button></div></div>`}function removeEntry(kind,id){if(!confirm('Ta bort registreringen?'))return;data[kind]=data[kind].filter(x=>x.id!==id);save()}function render(){let tm=data.meals.filter(m=>m.date===today()),total=tm.reduce((s,m)=>s+(m.calories||0),0),weights=[...data.weights].sort((a,b)=>a.date.localeCompare(b.date)),last=weights.at(-1),first=weights[0],goal=Number(data.profile.calories);document.getElementById('greeting').textContent='Hej'+(data.profile.name?', '+data.profile.name:'')+'! 👋';document.getElementById('homeCalories').textContent=fmt(total)+' kcal';document.getElementById('calorieSub').textContent=goal?'Riktmärke '+fmt(goal)+' kcal':'Ingen energigräns inställd';document.getElementById('calorieBar').style.width=goal?Math.min(100,total/goal*100)+'%':'0%';document.getElementById('homeWeight').textContent=last?fmt(last.value)+' kg':'– kg';document.getElementById('weightSub').textContent=last?'Senast '+last.date:'Logga din första vikt';document.getElementById('waterCount').textContent=(data.water[today()]||0)+' glas';document.getElementById('homeMeals').innerHTML=tm.length?tm.slice().reverse().map(mealMarkup).join(''):'<div class="empty">Inga måltider registrerade idag ännu.</div>';document.getElementById('mealHistory').innerHTML=data.meals.length?[...data.meals].sort((a,b)=>b.date.localeCompare(a.date)).map(mealMarkup).join(''):'<div class="empty">Din matdagbok är tom.</div>';document.getElementById('weightHistory').innerHTML=weights.length?weights.slice().reverse().map(w=>`<div class="item"><div><strong>${fmt(w.value)} kg</strong><div class="muted">${w.date}</div></div><button class="btn ghost" onclick="removeEntry('weights','${w.id}')">✕</button></div>`).join(''):'<div class="empty">Ingen vikt registrerad.</div>';let change=weights.length>1?last.value-first.value:null;document.getElementById('weightChange').textContent=change===null?'Registrera minst två vägningar för att se en förändring.':'Förändring sedan första registreringen: '+(change>0?'+':'')+fmt(change)+' kg';let week=data.meals.filter(m=>m.date>=dateDaysAgo(6)&&m.date<=today());document.getElementById('statMeals').textContent=week.length;document.getElementById('statDays').textContent=new Set(week.map(m=>m.date)).size+' / 7';let prot=tm.filter(m=>m.protein!==null);document.getElementById('statProtein').textContent=prot.length?fmt(prot.reduce((s,m)=>s+m.protein,0))+' g':'–';document.getElementById('statWeight').textContent=change===null?'–':(change>0?'+':'')+fmt(change)+' kg';let tips=['Att äta regelbundet kan göra det lättare att känna igen hunger och mättnad.','Prova att lägga till grönsaker eller frukt till en måltid idag.','Protein och fiberrika livsmedel kan bidra till mättnad.','En kort promenad efter en måltid kan vara ett skönt sätt att röra på sig.','Titta på trenden över flera veckor, inte en enskild vägning.','Sömn och återhämtning är också en del av hållbara hälsovanor.'];document.getElementById('dailyTip').textContent=tips[new Date().getDay()];document.getElementById('coachInsight').textContent=week.length?`Du har loggat ${week.length} måltider under de senaste sju dagarna, fördelade på ${new Set(week.map(m=>m.date)).size} dagar. Fortsätt observera vad som fungerar för dig. ${weights.length>1?'Din vikt har förändrats '+fmt(Math.abs(change))+' kg sedan första vägningen. Se hellre på utvecklingen över tid än på enskilda dagar.':'Du kan även logga vikt om du vill följa en långsiktig trend.'}`:'Välkommen! Börja med att registrera en måltid. Du behöver inte göra allt perfekt – nyfikenhet och kontinuitet räcker långt.';document.getElementById('chatLog').innerHTML=data.chat.length?data.chat.slice(-14).map(m=>`<div class="bubble ${m.role==='user'?'user':''}">${escapeHTML(m.text)}</div>`).join(''):'<div class="bubble">Hej! Fråga mig om måltidsidéer, mättnad, motivation eller vardagsrörelse.</div>';drawChart(weights)}
+function drawChart(weights){const c=document.getElementById('weightChart'),r=c.getBoundingClientRect();if(!r.width)return;let dpr=window.devicePixelRatio||1;c.width=Math.round(r.width*dpr);c.height=Math.round(210*dpr);let ctx=c.getContext('2d');ctx.scale(dpr,dpr);let w=r.width,h=210;ctx.clearRect(0,0,w,h);ctx.fillStyle='#71837a';ctx.font='13px sans-serif';if(!weights.length){ctx.fillText('Viktkurvan visas när du registrerat vikt.',14,110);return}let vals=weights.map(x=>x.value),min=Math.min(...vals)-1,max=Math.max(...vals)+1,pad=32;ctx.strokeStyle='#e4eee7';for(let i=0;i<4;i++){let y=15+i*(h-45)/3;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-12,y);ctx.stroke();ctx.fillText(fmt(max-(max-min)*i/3),0,y+4)}ctx.strokeStyle='#398466';ctx.lineWidth=3;ctx.beginPath();weights.forEach((v,i)=>{let x=pad+(weights.length===1?.5:i/(weights.length-1))*(w-pad-15),y=15+(max-v.value)/(max-min)*(h-45);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();ctx.fillStyle='#398466';weights.forEach((v,i)=>{let x=pad+(weights.length===1?.5:i/(weights.length-1))*(w-pad-15),y=15+(max-v.value)/(max-min)*(h-45);ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill()});ctx.fillStyle='#71837a';ctx.fillText(weights[0].date,pad,h-5);if(weights.length>1)ctx.fillText(weights.at(-1).date,w-95,h-5)}
+let editingMeal51=null;
+function suggestedMealType51(){let h=new Date().getHours();return h<10?'Frukost':h<14?'Lunch':h<20?'Middag':'Mellanmål'}
+function resetMeal51(){editingMeal51=null;document.getElementById('mealForm').reset();document.getElementById('mealDate').value=today();document.getElementById('mealType').value=suggestedMealType51();document.getElementById('mealSubmit51').textContent='Spara måltid';document.getElementById('cancelMealEdit51').style.display='none';document.getElementById('mealEditHint51').textContent='Måltidstypen föreslås efter klockslaget. Du kan alltid ändra den.'}
+function editMeal51(id){let m=data.meals.find(x=>x.id===id);if(!m)return;editingMeal51=id;for(let [field,value] of [['mealDate',m.date],['mealType',m.type],['mealName',m.name],['mealCalories',m.calories],['mealProtein',m.protein],['mealCarbs',m.carbs],['mealFat',m.fat]])document.getElementById(field).value=value??'';document.getElementById('mealSubmit51').textContent='Spara ändringar';document.getElementById('cancelMealEdit51').style.display='inline-block';document.getElementById('mealEditHint51').textContent='Du redigerar en sparad måltid. Ändringarna ersätter den tidigare registreringen.';go('food');document.getElementById('mealForm').scrollIntoView({behavior:'smooth',block:'start'})}
+document.getElementById('cancelMealEdit51').addEventListener('click',resetMeal51);
+document.getElementById('mealForm').addEventListener('submit',e=>{e.preventDefault();let name=document.getElementById('mealName').value.trim();if(!name)return;let cal=document.getElementById('mealCalories').value,prot=document.getElementById('mealProtein').value;let carbs=document.getElementById('mealCarbs').value,fat=document.getElementById('mealFat').value;let entry={date:document.getElementById('mealDate').value,type:document.getElementById('mealType').value,name,calories:cal===''?null:Number(cal),protein:prot===''?null:Number(prot),carbs:carbs===''?null:Number(carbs),fat:fat===''?null:Number(fat)};if(editingMeal51){let existing=data.meals.find(m=>m.id===editingMeal51);if(existing)Object.assign(existing,entry);else data.meals.push({id:crypto.randomUUID(),...entry})}else data.meals.push({id:crypto.randomUUID(),...entry});let wasEdit=!!editingMeal51;resetMeal51();save();toast(wasEdit?'Måltiden uppdaterad':'Måltiden sparad')});document.getElementById('weightForm').addEventListener('submit',e=>{e.preventDefault();data.weights.push({id:crypto.randomUUID(),date:document.getElementById('weightDate').value,value:Number(document.getElementById('weightValue').value)});document.getElementById('weightValue').value='';save();toast('Vikten sparad')});document.getElementById('settingsForm').addEventListener('submit',e=>{e.preventDefault();data.profile={name:document.getElementById('profileName').value.trim(),goal:document.getElementById('profileGoal').value,calories:document.getElementById('profileCalories').value};save();toast('Inställningar sparade')});function coachAnswer(q){q=q.toLowerCase();if(/protein|ägg|kött|bön|mätt/.test(q))return 'För bättre mättnad kan du prova att kombinera en proteinkälla (t.ex. ägg, kvarg, tofu, fisk eller bönor) med fiberrika grönsaker eller fullkorn. Anpassa efter vad du gillar.';if(/frukost|morgon/.test(q))return 'Ett förslag är havregrynsgröt med bär och yoghurt eller en smörgås med ägg och grönsaker. Välj en frukost som håller dig lagom mätt.';if(/kväll|sugen|godis|snack|hunger/.test(q))return 'Fundera på om du ätit tillräckligt under dagen. Ett planerat kvällsmål, som yoghurt med frukt eller en smörgås, kan fungera bättre än att försöka ignorera hunger.';if(/motivation|svårt|misslyck|orkar/.test(q))return 'Satsa på ett litet, genomförbart steg denna vecka, exempelvis en extra promenad eller en mer regelbunden lunch. Enstaka dagar avgör inte din utveckling.';if(/träning|motion|promenad|steg/.test(q))return 'Välj rörelse du tycker om. Korta promenader räknas också, och det kan vara lättare att öka gradvis än att börja för hårt.';if(/vikt|platå|stannar/.test(q))return 'Vikten varierar av många skäl, bland annat vätska. Titta på trenden över flera veckor och även på energi, sömn och hur du mår. Undvik att kompensera med extrema begränsningar.';return 'Ett bra första steg är att lägga märke till när du blir hungrig, vad som mättar och hur rutinerna fungerar. Prova en liten förändring i taget. Fråga gärna om frukost, protein, motivation, kvällshunger eller rörelse.'}function quickAsk(q){document.getElementById('chatInput').value=q;document.getElementById('chatForm').requestSubmit()}document.getElementById('chatForm').addEventListener('submit',e=>{e.preventDefault();let q=document.getElementById('chatInput').value.trim();if(!q)return;data.chat.push({role:'user',text:q},{role:'coach',text:coachAnswer(q)});document.getElementById('chatInput').value='';save();document.getElementById('chatLog').scrollTop=99999});function exportData(){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='balans-backup-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}document.getElementById('importFile').addEventListener('change',async e=>{let f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(!Array.isArray(o.meals)||!Array.isArray(o.weights)||typeof o.profile!=='object')throw Error('Fel format');if(!confirm('Ersätta befintlig data med filens innehåll?'))return;data={...blank(),...o};save();toast('Backup importerad')}catch{alert('Kunde inte läsa backupfilen.')}e.target.value=''});function clearData(){if(confirm('Vill du verkligen radera alla registreringar på den här enheten?')){data=blank();save();document.getElementById('settingsForm').reset();toast('All data raderad')}}document.getElementById('mealDate').value=today();resetMeal51();document.getElementById('weightDate').value=today();document.getElementById('profileName').value=data.profile.name||'';document.getElementById('profileGoal').value=data.profile.goal||'';document.getElementById('profileCalories').value=data.profile.calories||'';window.addEventListener('resize',()=>drawChart([...data.weights].sort((a,b)=>a.date.localeCompare(b.date))));render();
+</script><script>
+/* Balans 4.0 extension: preserves the original balans_v1 key and all its records. */
+const FOODS=[
+ ['Ägg, kokt (1 st, 55 g)',78,6.8],['Havregryn (40 g)',150,5.2],['Banan (1 st, 120 g)',105,1.3],
+ ['Äpple (1 st, 150 g)',78,0.4],['Naturell kvarg (150 g)',102,18],['Grekisk yoghurt (150 g)',145,12],
+ ['Mjölk 1,5 % (2 dl)',94,7],['Fullkornsbröd (1 skiva, 40 g)',96,3.6],['Ost 17 % (1 skiva, 20 g)',52,6],
+ ['Kycklingfilé, tillagad (150 g)',248,46],['Lax, tillagad (150 g)',309,33],['Tofu (150 g)',180,19],
+ ['Kokta linser (150 g)',174,13.5],['Kokt ris (150 g)',195,4],['Kokt potatis (200 g)',154,4],
+ ['Broccoli (150 g)',51,4.2],['Morot (100 g)',40,0.8],['Olivolja (1 msk)',119,0],
+ ['Jordgubbar (150 g)',48,1],['Mandlar (25 g)',145,5.3]
+];
+function foodButtons(){let q=document.getElementById('foodSearch').value.trim().toLocaleLowerCase('sv');let list=FOODS.map((f,i)=>({...{f,i}})).filter(o=>!q||o.f[0].toLocaleLowerCase('sv').includes(q)).slice(0,8);document.getElementById('foodMatches').innerHTML=list.map(({f,i})=>`<button type="button" onclick="chooseFood(${i})"><strong>${escapeHTML(f[0])}</strong>${f[1]} kcal · ${f[2]} g protein</button>`).join('')||'<span class="tinyhint">Inga träffar. Du kan alltid skriva in maten manuellt.</span>'}
+function chooseFood(i){let f=FOODS[i];if(!f)return;let multiplier=Number(document.getElementById('portionCount4')?.value||1);if(!Number.isFinite(multiplier)||multiplier<=0)multiplier=1;let name=document.getElementById('mealName'),cal=document.getElementById('mealCalories'),prot=document.getElementById('mealProtein');name.value=name.value.trim()?name.value.trim()+' + '+f[0]+' × '+multiplier:f[0]+' × '+multiplier;cal.value=Math.round(Number(cal.value||0)+f[1]*multiplier);prot.value=(Number(prot.value||0)+f[2]*multiplier).toFixed(1);toast('Livsmedel tillagt – justera portion vid behov')}
+function getFavorites(){try{let x=JSON.parse(localStorage.getItem('balans_favorites_v3')||'[]');return Array.isArray(x)?x:[]}catch{return []}}
+function saveFavorite(){let name=document.getElementById('mealName').value.trim();if(!name){toast('Skriv en måltid först');return}let arr=getFavorites();arr.unshift({id:crypto.randomUUID(),name,calories:document.getElementById('mealCalories').value,protein:document.getElementById('mealProtein').value});localStorage.setItem('balans_favorites_v3',JSON.stringify(arr.slice(0,25)));renderFavorites();toast('Favorit sparad lokalt')}
+function useFavorite(id){let f=getFavorites().find(x=>x.id===id);if(!f)return;document.getElementById('mealName').value=f.name;document.getElementById('mealCalories').value=f.calories;document.getElementById('mealProtein').value=f.protein;toast('Favorit vald')}
+function deleteFavorite(id){localStorage.setItem('balans_favorites_v3',JSON.stringify(getFavorites().filter(x=>x.id!==id)));renderFavorites()}
+function renderFavorites(){document.getElementById('favoriteMeals').innerHTML=getFavorites().map(f=>`<div><button type="button" style="width:100%" onclick="useFavorite('${f.id}')"><strong>${escapeHTML(f.name)}</strong>${f.calories||'–'} kcal</button><button type="button" class="btn ghost" style="font-size:11px" onclick="deleteFavorite('${f.id}')">Ta bort</button></div>`).join('')||'<span class="tinyhint">Inga favoriter ännu.</span>'}
+function weekStats(){let days=Array.from({length:7},(_,i)=>dateDaysAgo(6-i));let meals=days.map(d=>data.meals.filter(m=>m.date===d));let totals=meals.map(ms=>ms.reduce((a,m)=>a+(Number.isFinite(Number(m.calories))&&m.calories!==null?Number(m.calories):0),0));let logged=meals.map(ms=>ms.filter(m=>m.calories!==null&&m.calories!==undefined).length);let max=Math.max(1,...totals);document.getElementById('energyBars').innerHTML=days.map((d,i)=>`<div><i style="height:${Math.max(3,Math.round(totals[i]/max*94))}px;opacity:${logged[i]?1:.2}"></i>${d.slice(5)}</div>`).join('');let daysWithMeals=meals.filter(x=>x.length).length,daysWithEnergy=logged.filter(Boolean).length;document.getElementById('weekSummary').innerHTML=`<div class="statline">Dagar med matlogg: <strong>${daysWithMeals} av 7</strong></div><div class="statline">Dagar med energiuppgift: <strong>${daysWithEnergy} av 7</strong></div><div class="statline">Registrerade måltider: <strong>${meals.flat().length}</strong></div>`;let weights=[...data.weights].filter(w=>Number.isFinite(Number(w.value))).sort((a,b)=>a.date.localeCompare(b.date));let last=weights.at(-1),old=weights.filter(w=>last&&w.date<=dateDaysAgo(7)).at(-1);document.getElementById('trendSummary').textContent=old&&last?`Förändring sedan ${old.date}: ${(Number(last.value)-Number(old.value)).toLocaleString('sv-SE',{maximumFractionDigits:1})} kg.`:'För en jämförelse över tid behövs vägningar med minst en veckas mellanrum.'}
+const previousRender=render;render=function(){previousRender();weekStats();renderFavorites();renderBackupReminder()};
+function renderBackupReminder(){let last=localStorage.getItem('balans_backup_date_v3'),days=last?Math.floor((Date.now()-Number(last))/86400000):999;document.getElementById('backupReminder').innerHTML=days>=14&&data.meals.length+data.weights.length>0?'<div class="backup-alert"><strong>Påminnelse: säkerhetskopiera</strong><p class="tinyhint">Din data finns bara på den här enheten. Exportera en backup via Statistik/Inställningar innan du uppdaterar eller byter telefon.</p><button class="btn secondary" onclick="backupNow()">Exportera säkerhetskopia</button></div>':''}
+function backupNow(){exportData();localStorage.setItem('balans_backup_date_v3',String(Date.now()));renderBackupReminder()}
+const originalExport=exportData;exportData=function(){originalExport();localStorage.setItem('balans_backup_date_v3',String(Date.now()));renderBackupReminder()};
+const oldCoach=coachAnswer;coachAnswer=function(q){let a=oldCoach(q);let recent=data.meals.filter(m=>m.date>=dateDaysAgo(6)&&m.date<=today());let days=new Set(recent.map(m=>m.date)).size;let weights=[...data.weights].sort((x,y)=>x.date.localeCompare(y.date));let context=days?` Jag ser att du har registrerat måltider under ${days} av de senaste 7 dagarna.`:' Du har ännu få matregistreringar; börja gärna med en måltid om dagen.';if(/analys|sammanfatt|vecka|mina vanor|hur går/.test(q.toLowerCase())){let known=recent.filter(m=>m.protein!==null&&m.protein!==undefined);return `Under de senaste sju dagarna har du loggat ${recent.length} måltider under ${days} dagar. ${known.length?'Protein är registrerat för '+known.length+' måltider.':'Protein saknas för många måltider, så jag kan inte bedöma ditt proteinintag.'} ${weights.length>1?'Din senaste registrerade vikt är '+weights.at(-1).value+' kg.':''} Titta på rutiner och mättnad snarare än att försöka vara perfekt.`}return a+context};
+document.getElementById('foodSearch').addEventListener('input',foodButtons);foodButtons();renderFavorites();weekStats();renderBackupReminder();
+</script>
+<script>
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('./service-worker.js', {updateViaCache:'none'});
+      await reg.update();
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(()=>{}); });
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!sessionStorage.getItem('balans-sw-reloaded-572')) {
+          sessionStorage.setItem('balans-sw-reloaded-572','1');
+          location.reload();
+        }
+      });
+    } catch(err) { console.warn('Offline-installation kunde inte uppdateras:',err); }
+  });
+}
+</script>
+<script>
+/* Balans 4 additions are additive. The original balans_v1 data remains unchanged. */
+FOODS.push(
+ ['Rågknäckebröd (1 skiva, 12 g)',42,1.1],['Keso 4 % (150 g)',147,18],['Filmjölk 3 % (2 dl)',120,7],
+ ['Rågbröd (1 skiva, 45 g)',105,3.5],['Smör (10 g)',74,0.1],['Jordnötssmör (20 g)',120,5],
+ ['Kokt pasta (150 g)',235,8],['Bulgur, kokt (150 g)',125,4.5],['Quinoa, kokt (150 g)',180,6.5],
+ ['Kikärtor, kokta (150 g)',246,13],['Svarta bönor, kokta (150 g)',198,13],
+ ['Tonfisk i vatten (100 g)',110,25],['Kalkonpålägg (50 g)',55,10],['Nötfärs 10 %, tillagad (150 g)',310,39],
+ ['Ärtor (150 g)',115,8],['Paprika (100 g)',28,1],['Tomat (100 g)',20,1],
+ ['Blåbär (100 g)',50,0.7],['Päron (150 g)',85,0.6],['Apelsin (150 g)',70,1.3],
+ ['Valnötter (25 g)',165,3.8],['Avokado (100 g)',160,2],['Rapsolja (1 msk)',120,0]
+);foodButtons();
+const challengeKey4='balans_challenge_v4';
+let challenge4={};try{challenge4=JSON.parse(localStorage.getItem(challengeKey4)||'{}')||{}}catch{}
+const sel4=document.getElementById('challenge4');sel4.value=challenge4.type||'';
+function renderChallenge4(){let count=Object.values(challenge4.done||{}).filter(Boolean).length;document.getElementById('challengeStatus4').textContent=(challenge4.done?.[today()]?'✓ Klar idag. ':'')+count+' dagar markerade totalt på den här enheten.'}
+sel4.addEventListener('change',()=>{challenge4={type:sel4.value,done:{}};localStorage.setItem(challengeKey4,JSON.stringify(challenge4));renderChallenge4()});
+document.getElementById('challengeDone4').addEventListener('click',()=>{if(!sel4.value){toast('Välj en utmaning först');return}challenge4.done=challenge4.done||{};challenge4.done[today()]=true;localStorage.setItem(challengeKey4,JSON.stringify(challenge4));renderChallenge4();toast('Bra jobbat!')});renderChallenge4();
+/* Images are stored in IndexedDB, never sent to a server. */
+const photoDb4=new Promise((resolve,reject)=>{if(!('indexedDB' in window)){reject(Error('Ingen bildlagring'));return}let req=indexedDB.open('balans_photos_v4',1);req.onupgradeneeded=()=>req.result.createObjectStore('photos',{keyPath:'id'});req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)});
+function photoTxn4(mode,action){return photoDb4.then(db=>new Promise((resolve,reject)=>{let tx=db.transaction('photos',mode),req=action(tx.objectStore('photos'));req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)}))}
+function resizePhoto4(file){return new Promise((resolve,reject)=>{let url=URL.createObjectURL(file),img=new Image();img.onload=()=>{try{let scale=Math.min(1,1000/Math.max(img.width,img.height));let c=document.createElement('canvas');c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);resolve(c.toDataURL('image/jpeg',.7))}catch(e){reject(e)}};img.onerror=()=>{URL.revokeObjectURL(url);reject(Error('Bildformatet kunde inte läsas'))};img.src=url})}
+let pendingPhoto4=null;
+document.getElementById('photoInput4').addEventListener('change',async e=>{let f=e.target.files[0];if(!f)return;if(!f.type.startsWith('image/')){toast('Välj en bild');return}try{pendingPhoto4=await resizePhoto4(f);let img=document.createElement('img');img.src=pendingPhoto4;img.alt='Förhandsvisning av måltid';img.style='max-width:100%;max-height:240px;border-radius:12px';document.getElementById('photoPreview4').replaceChildren(img)}catch{toast('Kunde inte läsa bilden')}});
+document.getElementById('savePhoto4').addEventListener('click',async()=>{if(!pendingPhoto4){toast('Välj ett foto först');return}try{await photoTxn4('readwrite',store=>store.put({id:crypto.randomUUID(),date:document.getElementById('mealDate').value||today(),image:pendingPhoto4}));pendingPhoto4=null;document.getElementById('photoInput4').value='';document.getElementById('photoPreview4').replaceChildren();await renderPhotos4();toast('Fotot sparat på telefonen')}catch{toast('Kunde inte spara fotot – kontrollera lagringsutrymmet')}});
+async function renderPhotos4(){try{let photos=(await photoTxn4('readonly',store=>store.getAll())).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);let el=document.getElementById('photoGallery4');el.replaceChildren();for(let p of photos){let row=document.createElement('div');row.className='item';let img=document.createElement('img');img.src=p.image;img.alt='Måltidsfoto '+p.date;img.style='width:70px;height:70px;object-fit:cover;border-radius:9px';let d=document.createElement('span');d.textContent=p.date;let btn=document.createElement('button');btn.className='btn ghost';btn.textContent='Ta bort';btn.addEventListener('click',async()=>{if(confirm('Ta bort fotot?')){await photoTxn4('readwrite',s=>s.delete(p.id));renderPhotos4()}});row.append(img,d,btn);el.append(row)}}catch{document.getElementById('photoGallery4').textContent='Fotolagring är inte tillgänglig på den här enheten.'}}renderPhotos4();
+// The legacy delete-all action should also clear new private data, but only after its confirmation.
+const oldClear4=clearData;clearData=function(){if(!confirm('Radera alla registreringar, utmaningar och sparade foton på den här enheten?'))return;data=blank();save();localStorage.removeItem(challengeKey4);localStorage.removeItem('balans_favorites_v3');challenge4={};sel4.value='';renderChallenge4();photoDb4.then(db=>{let tx=db.transaction('photos','readwrite');tx.objectStore('photos').clear();tx.oncomplete=renderPhotos4}).catch(()=>{});document.getElementById('settingsForm').reset();toast('Lokal data raderad')};
+</script>
+<script>
+/* Balans 5 additions: all v4 storage keys retained, no migration or deletion. */
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const FOOD5=[['Havregryn',370,13,60,7],['Mjölk 1,5 %',47,3.5,4.8,1.5],['Ägg kokt',137,12.6,0.7,9.5],['Kvarg naturell',67,12,4,0.2],['Grekisk yoghurt 10 %',133,5,4,10],['Banan',90,1.1,20,0.3],['Äpple',52,0.3,12,0.2],['Potatis kokt',83,1.8,18,0.1],['Ris kokt',130,2.7,28,0.3],['Pasta kokt',150,5.5,30,1],['Kycklingfilé tillagad',165,31,0,3.6],['Lax tillagad',208,20,0,13],['Nötfärs 10 % tillagad',215,27,0,11],['Linser kokta',116,9,20,0.4],['Kikärter kokta',164,9,27,2.6],['Broccoli',34,2.8,4,0.4],['Morot',41,0.9,10,0.2],['Rågbröd',230,7,43,2],['Smör',740,0.5,0.5,82],['Ost 28 %',350,25,1,28],['Keso',95,12,3,4],['Blåbär',51,0.7,11,0.5]];
+let selected5=[];
+function n5(v){return Math.round((Number(v)||0)*10)/10}
+function grams5(){return Math.max(1,Math.min(3000,Number($('foodGrams5').value)||100))}
+function showFoods5(rows,source){selected5=rows;const el=$('foodResults5');el.replaceChildren();if(!rows.length){el.textContent='Inga träffar. Prova ett annat sökord.';return}rows.slice(0,15).forEach((f,i)=>{const div=document.createElement('div');div.className='item';const desc=document.createElement('div');const strong=document.createElement('strong');strong.textContent=f[0];const sub=document.createElement('div');sub.className='muted';sub.textContent=`Per 100 g: ${n5(f[1])} kcal · protein ${n5(f[2])} g · kolhydrater ${n5(f[3])} g · fett ${n5(f[4])} g`;desc.append(strong,sub);const b=document.createElement('button');b.className='btn secondary';b.textContent='Lägg till';b.addEventListener('click',()=>{let g=grams5(),factor=g/100;$('mealName').value=($('mealName').value.trim()?$('mealName').value.trim()+' + ':'')+f[0]+' '+g+' g';$('mealCalories').value=Math.round((Number($('mealCalories').value)||0)+f[1]*factor);$('mealProtein').value=n5((Number($('mealProtein').value)||0)+f[2]*factor);$('mealCarbs').value=n5((Number($('mealCarbs').value)||0)+f[3]*factor);$('mealFat').value=n5((Number($('mealFat').value)||0)+f[4]*factor);toast('Tillagt – kontrollera värden och spara måltiden')});div.append(desc,b);el.append(div)});const p=document.createElement('p');p.className='small muted';p.textContent=source;el.append(p)}
+$('searchLocal5').addEventListener('click',()=>{const q=$('foodQuery5').value.trim().toLocaleLowerCase('sv');showFoods5(FOOD5.filter(f=>f[0].toLocaleLowerCase('sv').includes(q)),'Ungefärliga generiska näringsvärden, inte verifierade produktvärden.')});
+$('searchOnline5').addEventListener('click',async()=>{if(!navigator.onLine){toast('Offline – använd den lokala listan');return}let q=$('foodQuery5').value.trim();if(q.length<2){toast('Skriv minst två tecken');return}const el=$('foodResults5');el.textContent='Söker Open Food Facts…';try{const url='https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&search_simple=1&action=process&json=1&page_size=15&fields=product_name,product_name_sv,nutriments';let r=await fetch(url,{signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('Sökningen misslyckades');let j=await r.json();let rows=(j.products||[]).map(p=>{let z=p.nutriments||{};let name=p.product_name_sv||p.product_name;let kcal=Number(z['energy-kcal_100g']);if(!name||!Number.isFinite(kcal)||kcal<0)return null;return [name,kcal,Number(z.proteins_100g)||0,Number(z.carbohydrates_100g)||0,Number(z.fat_100g)||0]}).filter(Boolean);showFoods5(rows,'Open Food Facts: användargenererad produktdata. Kontrollera alltid etiketten.')}catch(e){el.textContent='Kunde inte söka online. Använd offline-listan.'}});
+function config5(){return {url:(localStorage.getItem('balans_ai_worker_v5')||'').replace(/\/+$/,''),code:localStorage.getItem('balans_ai_family_code_v5')||''}}
+$('workerUrl5').value=config5().url;$('familyCode5').value=config5().code;
+$('saveAISettings5').addEventListener('click',()=>{let url=$('workerUrl5').value.trim().replace(/\/+$/,'');if(url&&!/^https:\/\/[a-z0-9.-]+(?::\d+)?(?:\/.*)?$/i.test(url)){toast('Ange en giltig HTTPS-adress');return}localStorage.setItem('balans_ai_worker_v5',url);localStorage.setItem('balans_ai_family_code_v5',$('familyCode5').value);$('aiStatus5').textContent='Inställningar sparade lokalt.'});
+async function request5(payload){let c=config5();if(!c.url||!c.code)throw Error('Ange Worker-adress och familjekod under Statistik.');if(!navigator.onLine)throw Error('Du är offline. Använd offline-coachen.');const r=await fetch(c.url+'/api/ai',{method:'POST',headers:{'Content-Type':'application/json','X-Balans-Code':c.code},body:JSON.stringify(payload),signal:AbortSignal.timeout(45000)});let j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error||'AI-tjänsten svarade inte ('+r.status+').');return j}
+$('testAI5').addEventListener('click',async()=>{let c=config5();if(!c.url){$('aiStatus5').textContent='Spara Worker-adressen först.';return}try{let r=await fetch(c.url+'/health',{signal:AbortSignal.timeout(10000)});$('aiStatus5').textContent=r.ok?'Servern svarar. Prova AI-coachen för att testa åtkomstkoden.':'Servern svarar med felkod '+r.status}catch{$('aiStatus5').textContent='Ingen anslutning. Kontrollera URL och internet.'}});
+function context5(){const cutoff=dateDaysAgo(6),meals=data.meals.filter(m=>m.date>=cutoff&&m.date<=today()).slice(-60),weights=data.weights.filter(w=>w.date>=cutoff&&w.date<=today()).slice(-10);return {meals:meals.map(m=>({date:m.date,type:m.type,name:String(m.name||'').slice(0,160),calories:m.calories,protein:m.protein})),weights:weights.map(w=>({date:w.date,kg:w.value}))}}
+$('askAI5').addEventListener('click',async()=>{let q=$('aiQuestion5').value.trim();if(!q){toast('Skriv en fråga');return}if(!$('aiConsent5').checked){toast('Godkänn först att frågan skickas');return}let b=$('askAI5');b.disabled=true;$('aiAnswer5').textContent='AI-coachen tänker…';try{let result=await request5({type:'coach',question:q,context:$('aiContext5').checked?context5():null});$('aiAnswer5').textContent=result.answer||'Inget svar.'}catch(e){$('aiAnswer5').textContent=e.message+' Offline-coachen finns nedanför.'}finally{b.disabled=false}});
+$('analyzePhoto5').addEventListener('click',async()=>{if(!pendingPhoto4){toast('Välj först ett foto ovan');return}if(!$('photoConsent5').checked){toast('Godkänn först att fotot skickas');return}let b=$('analyzePhoto5');b.disabled=true;$('photoResult5').textContent='Analyserar bilden…';try{let result=await request5({type:'photo',image:pendingPhoto4});let m=result.meal||{};if(!m.name)throw Error('Inget användbart resultat');$('photoResult5').textContent=`AI-förslag: ${m.name}. Cirka ${m.calories??'?'} kcal, protein ${m.protein??'?'} g, kolhydrater ${m.carbs??'?'} g, fett ${m.fat??'?'} g. ${m.caveat||'Portionsstorleken är osäker.'} Granska och spara måltiden själv.`;$('mealName').value=String(m.name).slice(0,300);$('mealCalories').value=Number.isFinite(Number(m.calories))?Math.round(Number(m.calories)):'';$('mealProtein').value=Number.isFinite(Number(m.protein))?n5(m.protein):'';$('mealCarbs').value=Number.isFinite(Number(m.carbs))?n5(m.carbs):'';$('mealFat').value=Number.isFinite(Number(m.fat))?n5(m.fat):'';if(!editingMeal51)$('mealType').value=suggestedMealType51()}catch(e){$('photoResult5').textContent='Analysen misslyckades: '+e.message}finally{b.disabled=false}});
+})();
+</script><script>
+/* Balans 5.2: extra näringsöversikt utan att ändra lokal lagringsnyckel. */
+const renderBefore51=render;
+render=function(){renderBefore51();const ms=data.meals.filter(m=>m.date===today());const sum=k=>ms.reduce((n,m)=>n+(m[k]===null||m[k]===undefined||m[k]===''?0:Number(m[k])||0),0);const count=k=>ms.filter(m=>m[k]!==null&&m[k]!==undefined&&m[k]!=='').length;const el=document.getElementById('nutritionToday51');el.replaceChildren();const grid=document.createElement('div');grid.className='grid';[['Energi','calories','kcal'],['Protein','protein','g'],['Kolhydrater','carbs','g'],['Fett','fat','g']].forEach(([label,key,unit])=>{const card=document.createElement('div');card.innerHTML='<div class="eyebrow">'+label+'</div><div class="big" style="font-size:1.45rem">'+(count(key)?fmt(sum(key))+' '+unit:'–')+'</div><div class="muted">'+count(key)+' av '+ms.length+' måltider</div>';grid.append(card)});el.append(grid);const note=document.createElement('p');note.className='tinyhint';note.textContent='Värdena är uppskattningar. Ett streck betyder att uppgifter saknas, inte noll.';el.append(note)};
+render();
+</script>
+<script>
+/* Photo-first shortcut, preserving existing photo upload/AI handlers. */
+(function(){
+ const btn=document.getElementById('startPhoto52');
+ if(!btn)return;
+ btn.addEventListener('click',()=>{
+   go('food');
+   const photo=document.getElementById('photoInput4');
+   if(!photo)return;
+   const section=photo.closest('section');
+   if(section)section.scrollIntoView({behavior:'smooth',block:'start'});
+   // iOS requires the picker to open from a user gesture; the user can tap the visible photo selector.
+   try{photo.click()}catch(e){photo.focus()}
+ });
+})();
+</script><script>
+/* Balans 5.3: presentation layer only. Original photo analysis, meal form,
+   storage key and save handler remain the source of truth. */
+(()=>{
+ const el=id=>document.getElementById(id);
+ const result=el('photoResult5'),card=el('aiReview53'),form=el('mealForm');
+ const fields=[['mealCalories','reviewCalories53',' kcal'],['mealProtein','reviewProtein53',' g'],['mealCarbs','reviewCarbs53',' g'],['mealFat','reviewFat53',' g']];
+ let active=false;
+ function update(){
+   if(!active)return;
+   el('reviewMeal53').textContent=el('mealName').value.trim()||'Din måltid';
+   fields.forEach(([input,output,unit])=>{const val=el(input).value;el(output).textContent=val!==''?val+unit:'–';});
+ }
+ const observer=new MutationObserver(()=>{
+   const message=result.textContent.trim();
+   if(message.startsWith('AI-förslag:')){
+     active=true;card.hidden=false;result.classList.add('ai-success53');update();
+     card.scrollIntoView({behavior:'smooth',block:'nearest'});
+   }else if(message.startsWith('Analyserar')){
+     active=false;card.hidden=true;result.classList.remove('ai-success53');
+   }else if(message){result.classList.remove('ai-success53');}
+ });
+ observer.observe(result,{childList:true,characterData:true,subtree:true});
+ ['mealName',...fields.map(x=>x[0])].forEach(id=>el(id).addEventListener('input',update));
+ el('reviewEdit53').addEventListener('click',()=>{form.closest('.meal-form-card').scrollIntoView({behavior:'smooth',block:'start'});el('mealName').focus({preventScroll:true});});
+ el('quickSave53').addEventListener('click',()=>{
+   if(!active)return;
+   if(!form.reportValidity())return;
+   form.requestSubmit();
+   active=false;card.hidden=true;result.classList.remove('ai-success53');
+ });
+ // Don't hide the full form: manual entry, corrections and editing remain available.
+})();
+</script><script>/* Balans 5.4: disclosure UX, preserving data and existing handlers. */
+(()=>{const detail=document.getElementById('manualMeal54');const openForm=()=>{detail.open=true;};const originalEdit=window.editMeal51;window.editMeal51=function(id){openForm();return originalEdit(id);};document.getElementById('reviewEdit53').addEventListener('click',openForm,{capture:true});document.getElementById('cancelMealEdit51').addEventListener('click',()=>{detail.open=false});document.getElementById('mealForm').addEventListener('submit',()=>{if(document.getElementById('mealForm').checkValidity())detail.open=false});})();</script><script>
+/* Balans 5.5: official Swedish Food Agency search, no guessed nutrient substitution. */
+(()=>{
+ const $=id=>document.getElementById(id);
+ const status=$('slvStatus55'),results=$('slvResults55');
+ const base='https://dataportal.livsmedelsverket.se/livsmedel/api/v1';
+ const endpoint=(kind,id)=>{
+   const worker=(localStorage.getItem('balans_ai_worker_v5')||'').replace(/\/+$/,'');
+   const code=localStorage.getItem('balans_ai_family_code_v5')||'';
+   if(!worker||!code)throw Error('Spara Worker-adress och familjekod under Statistik först.');
+   const url=kind==='search'?worker+'/api/slv/search?q='+encodeURIComponent(id):worker+'/api/slv/nutrients/'+encodeURIComponent(id);
+   return {url,code};
+ };
+ async function get(kind,id){
+   const {url,code}=endpoint(kind,id);
+   const r=await fetch(url,{headers:{'X-Balans-Code':code},signal:AbortSignal.timeout(20000)});
+   const data=await r.json().catch(()=>({}));
+   if(!r.ok)throw Error(data.error||'Livsmedelsverket kunde inte nås ('+r.status+').');
+   return data;
+ }
+ const numeric=x=>{const v=Number(String(x??'').replace(',','.'));return Number.isFinite(v)&&v>=0?v:null};
+ const round=x=>Math.round(x*10)/10;
+ function openManual(){const d=$('manualMeal54');if(d)d.open=true;}
+ function addFood(food,values){
+   const grams=Number($('slvGrams55').value);
+   if(!Number.isFinite(grams)||grams<1||grams>3000){status.textContent='Ange en mängd mellan 1 och 3000 gram.';return;}
+   const fields=[['calories','mealCalories'],['protein','mealProtein'],['carbs','mealCarbs'],['fat','mealFat']];
+   if(fields.some(([k])=>numeric(values[k])===null)){status.textContent='Näringsvärden saknas för detta livsmedel. Inga värden ändrades.';return;}
+   const form=$('mealForm');openManual();
+   const name=$('mealName');name.value=(name.value.trim()?name.value.trim()+' + ':'')+food.name+' '+grams+' g';
+   for(const [key,id] of fields){const el=$(id);const old=el.value===''?0:Number(el.value);el.value=round(old+values[key]*grams/100);el.dispatchEvent(new Event('input',{bubbles:true}));}
+   name.dispatchEvent(new Event('input',{bubbles:true}));
+   status.textContent='Tillagt: '+food.name+' ('+grams+' g). Granska och spara måltiden i formuläret.';
+   form.closest('.meal-form-card').scrollIntoView({behavior:'smooth',block:'start'});
+ }
+ $('slvSearch55').addEventListener('click',async()=>{
+   const q=$('slvQuery55').value.trim();if(q.length<2){status.textContent='Skriv minst två tecken.';return;}
+   results.replaceChildren();status.textContent='Söker hos Livsmedelsverket…';$('slvSearch55').disabled=true;
+   try{
+     const foods=await get('search',q);if(!Array.isArray(foods))throw Error('Oväntat svar från servern.');
+     status.textContent=foods.length?foods.length+' träffar. Välj rätt livsmedel:':'Inga träffar. Prova ett kortare sökord.';
+     for(const food of foods){
+       const row=document.createElement('div');row.className='item';
+       const title=document.createElement('strong');title.textContent=food.name;
+       const button=document.createElement('button');button.type='button';button.className='btn secondary';button.textContent='Visa näring';
+       const details=document.createElement('div');details.className='muted';
+       button.addEventListener('click',async()=>{
+         button.disabled=true;details.textContent='Hämtar näringsvärden…';
+         try{
+           const values=await get('nutrients',food.id);
+           if(['calories','protein','carbs','fat'].some(k=>numeric(values[k])===null)){details.textContent='Kompletta värden saknas. Välj ett annat livsmedel.';return;}
+           details.replaceChildren();
+           const text=document.createElement('p');text.textContent=`Per 100 g: ${values.calories} kcal · protein ${values.protein} g · kolhydrater ${values.carbs} g · fett ${values.fat} g`;
+           const add=document.createElement('button');add.type='button';add.className='btn';add.textContent='Lägg till '+$('slvGrams55').value+' g';add.addEventListener('click',()=>addFood(food,values));
+           details.append(text,add);
+         }catch(e){details.textContent=e.message}finally{button.disabled=false}
+       });
+       row.append(title,button,details);results.append(row);
+     }
+   }catch(e){status.textContent=e.message+' Befintlig AI-analys och offline-sökning fungerar fortfarande.'}
+   finally{$('slvSearch55').disabled=false}
+ });
+ // After AI has identified a dish, prefill search but never claim an exact official match.
+ const result=$('photoResult5');new MutationObserver(()=>{
+   if(result.textContent.startsWith('AI-förslag:')){
+     const name=$('mealName').value.trim();if(name)$('slvQuery55').value=name.slice(0,100);
+   }
+ }).observe(result,{childList:true,subtree:true});
+})();
+</script><script>
+/* Balans 5.6 – UI-only: existing localStorage key and all meal handlers preserved. */
+function setFoodMode56(mode){
+ document.querySelectorAll('[data-panel56]').forEach(p=>p.hidden=p.dataset.panel56!==mode);
+ document.querySelectorAll('[data-mode56]').forEach(b=>{const yes=b.dataset.mode56===mode;b.classList.toggle('selected',yes);b.setAttribute('aria-pressed',String(yes))});
+ if(mode==='manual')document.getElementById('manualMeal54').open=true;
+ if(mode==='search')document.getElementById('foodTools54').open=true;
+}
+(()=>{
+ const originalEdit=window.editMeal51;
+ if(typeof originalEdit==='function')window.editMeal51=function(id){setFoodMode56('manual');return originalEdit(id)};
+ const rev=document.getElementById('reviewEdit53');if(rev)rev.addEventListener('click',()=>setFoodMode56('manual'));
+ const cancel=document.getElementById('cancelMealEdit51');if(cancel)cancel.addEventListener('click',()=>setFoodMode56('photo'));
+ const foodForm=document.getElementById('mealForm');if(foodForm)foodForm.addEventListener('submit',()=>{if(foodForm.checkValidity())setFoodMode56('photo')});
+ const quick=document.getElementById('quickSave53');if(quick)quick.addEventListener('click',()=>setFoodMode56('photo'));
+})();
+</script><script>/* Compact after AI result; preserve the original AI and form handlers. */
+(()=>{const food=document.getElementById('food'),result=document.getElementById('photoResult5'),review=document.getElementById('aiReview53');if(!food||!result||!review)return;
+const sync=()=>{food.classList.toggle('photo-reviewed563',!review.hidden&&result.textContent.trim().startsWith('AI-förslag:'));};
+new MutationObserver(sync).observe(review,{attributes:true,attributeFilter:['hidden']});
+new MutationObserver(sync).observe(result,{childList:true,characterData:true,subtree:true});
+const input=document.getElementById('photoInput4');if(input)input.addEventListener('change',()=>{food.classList.remove('photo-reviewed563')});
+const btn=document.getElementById('analyzePhoto5');if(btn)btn.addEventListener('click',()=>food.classList.remove('photo-reviewed563'));
+const save=document.getElementById('quickSave53');if(save)save.addEventListener('click',()=>food.classList.remove('photo-reviewed563'));
+sync();
+})();</script><script>
+/* The legacy coach remains in hidden DOM solely for compatibility with existing handlers. */
+(function(){
+let analysisPeriod57=7;
+function setAnalysisPeriod57(n){analysisPeriod57=n;document.querySelectorAll('[data-period57]').forEach(b=>b.classList.toggle('selected',Number(b.dataset.period57)===n));updateAnalysis564()}
+document.querySelectorAll('[data-period57]').forEach(button=>button.addEventListener('click',()=>setAnalysisPeriod57(Number(button.dataset.period57))));
+function updateAnalysis564(){
+ if(typeof data==='undefined'||typeof today!=='function')return;
+ const now=new Date();now.setHours(12,0,0,0);
+ const dates=Array.from({length:analysisPeriod57},(_,i)=>{const d=new Date(now);d.setDate(now.getDate()-(analysisPeriod57-1)+i);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`});
+ const rows=dates.map(date=>{const meals=(data.meals||[]).filter(m=>m.date===date);const c=meals.filter(m=>m.calories!==null&&m.calories!==undefined&&Number.isFinite(Number(m.calories)));const pr=meals.filter(m=>m.protein!==null&&m.protein!==undefined&&Number.isFinite(Number(m.protein)));return {date,meals:meals.length,kcal:c.reduce((a,m)=>a+Number(m.calories),0),protein:pr.reduce((a,m)=>a+Number(m.protein),0),hasCalories:c.length>0,hasProtein:pr.length>0,completeProtein:meals.length>0&&pr.length===meals.length};});
+ const energy=rows.filter(r=>r.hasCalories),prot=rows.filter(r=>r.completeProtein);
+ const fmtLocal=n=>Number(n).toLocaleString('sv-SE',{maximumFractionDigits:1});
+ document.getElementById('analysisKcal564').textContent=energy.length?fmtLocal(energy.reduce((a,r)=>a+r.kcal,0)/energy.length)+' kcal':'–';
+ document.getElementById('analysisDays564').textContent=rows.filter(r=>r.meals).length+' av '+analysisPeriod57+' dagar med måltider';
+ document.getElementById('analysisProtein564').textContent=prot.length?fmtLocal(prot.reduce((a,r)=>a+r.protein,0)/prot.length)+' g':'–';
+ document.getElementById('analysisProteinNote564').textContent=prot.length?prot.length+' dagar med fullständiga proteinvärden':'Saknar kompletta proteinvärden';
+ const max=Math.max(1,...energy.map(r=>r.kcal));
+ document.getElementById('analysisBars564').classList.toggle('month57',analysisPeriod57===30);
+ document.getElementById('analysisAxis564').classList.toggle('month57',analysisPeriod57===30);
+ document.getElementById('analysisBars564').innerHTML=rows.map(r=>`<div class="analysis-bar564 ${r.hasCalories?'active':'empty'}" style="height:${r.hasCalories?Math.max(4,Math.round(r.kcal/max*100)):3}%" title="${r.date}: ${r.hasCalories?fmtLocal(r.kcal)+' kcal':'inga kalorivärden'}"></div>`).join('');
+ document.getElementById('analysisAxis564').innerHTML=dates.map((d,i)=>`<span>${analysisPeriod57===30?(i%5===0||i===29?new Date(d+'T12:00:00').getDate():''):new Date(d+'T12:00:00').toLocaleDateString('sv-SE',{weekday:'short'}).replace('.','')}</span>`).join('');
+ const w=[...(data.weights||[])].filter(x=>Number.isFinite(Number(x.value))).sort((a,b)=>a.date.localeCompare(b.date));
+ document.getElementById('analysisWeight564').textContent=w.length?fmtLocal(w.at(-1).value)+' kg':'–';
+ document.getElementById('analysisWeightNote564').textContent=w.length>1?'Förändring sedan första vägningen: '+(Number(w.at(-1).value)-Number(w[0].value)>0?'+':'')+fmtLocal(Number(w.at(-1).value)-Number(w[0].value))+' kg':w.length?'Senast registrerad '+w.at(-1).date:'Registrera vikt för att se utvecklingen.';
+}
+const originalGo564=go;go=function(id){originalGo564(id==='coach'?'analysis':id);if(id==='analysis'||id==='coach')updateAnalysis564()};
+const originalRender564=render;render=function(){originalRender564();updateAnalysis564()};
+updateAnalysis564();
+})();
+</script><style id="balans57styles">
+/* Balans 5.7: concise reading density across all five views */
+header{padding-bottom:12px!important}header .hero{margin-top:4px!important}header .hero h1{font-size:21px!important;margin-bottom:0!important}header .hero p{display:none!important}
+main{padding-top:9px!important}.section-title{margin:10px 0 7px!important;font-size:17px!important}
+.card{padding:12px!important;margin-bottom:8px!important;border-radius:16px!important}.compact-details56{margin:7px 0!important}.compact-details56>summary{padding:11px 13px!important;font-size:14px!important}
+#analysis .analysis-grid564 .card{padding:12px!important}#analysis .analysis-number564{font-size:clamp(21px,5vw,28px)!important}#analysis .analysis-compact564{padding:12px!important}
+.analysis-period57{display:inline-flex;gap:3px;border:1px solid #dce8de;border-radius:12px;padding:3px;background:#edf4ee}.analysis-period57 button{border:0;background:transparent;color:#315b4c;border-radius:9px;padding:7px 10px;font-size:12px;font-weight:700}.analysis-period57 button.selected{background:#1d5947;color:#fff}
+.analysis-bars564.month57{grid-template-columns:repeat(30,minmax(0,1fr))!important;gap:2px!important;overflow:hidden!important}.analysis-bars564.month57 .analysis-bar564{min-width:0!important}.analysis-axis564.month57{grid-template-columns:repeat(30,minmax(0,1fr))!important;gap:2px!important;overflow:hidden!important;font-size:9px!important}.analysis-axis564.month57 span{min-width:0!important}
+#stats .stats-overview57{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}#stats .stats-overview57 .card{margin:0!important}#stats .stats-overview57 .big{font-size:23px!important}
+#stats .stats-group57{margin:8px 0!important}#stats .stats-group57>summary{font-size:14px!important}#stats .stats-group57 .section-title{font-size:15px!important}
+#stats .stats-group57 .card{box-shadow:none!important;border:1px solid #edf1ed!important}
+#home .card,#weight .card{padding:12px!important}#food .photo-flow{padding:12px!important}#food .compact-photo-head562 p{display:none!important}
+@media(max-width:390px){.analysis-period57 button{padding:6px 7px}.nav button{font-size:10px!important}}
+</style>
+<script id="balans57script">
+/* Reorganize existing statistics without duplicating form controls or changing saved data. */
+(function(){
+ const stats=document.getElementById('stats');if(!stats)return;
+ const oldTrend=Array.from(stats.children).find(x=>x.tagName==='DETAILS'&&x.querySelector('#trendSummary'));
+ const oldSettings=Array.from(stats.children).find(x=>x.tagName==='DETAILS'&&x.querySelector('#settingsForm'));
+ const weekCard=Array.from(stats.children).find(x=>x.classList.contains('card')&&x.querySelector('#energyBars'));
+ if(!oldSettings)return;
+ const body=oldSettings.querySelector('.card');
+ const nodes=Array.from(oldSettings.children);
+ // Move the original content, preserving event listeners and element IDs.
+ const makeGroup=(title,items)=>{const d=document.createElement('details');d.className='compact-details56 stats-group57';const summary=document.createElement('summary');summary.textContent=title;d.append(summary);items.forEach(n=>d.append(n));stats.append(d);return d};
+ const children=Array.from(oldSettings.children);
+ const findTitle=t=>children.findIndex(n=>n.classList.contains('section-title')&&n.textContent.toLowerCase().includes(t));
+ const profileIdx=findTitle('din profil'),dataIdx=findTitle('din data'),challengeIdx=findTitle('familjeutmaningar');
+ const statIdx=findTitle('statistik');
+ const ai=children.slice(0,statIdx).filter(n=>n!==body||true);
+ const overview=children.slice(statIdx+1,challengeIdx);
+ const challenges=children.slice(challengeIdx+1,profileIdx);
+ const profile=children.slice(profileIdx+1,dataIdx);
+ const backup=children.slice(dataIdx+1);
+ // Compact four original summary counters, keep their IDs for render().
+ const metrics=overview.find(n=>n.classList.contains('grid'));
+ if(metrics){metrics.classList.add('stats-overview57');stats.append(metrics)}
+ makeGroup('Historik och diagram',[...(weekCard?[weekCard]:[]),...(oldTrend?[oldTrend]:[])]);
+ makeGroup('Mål och profil',profile);
+ makeGroup('Säkerhetskopia och data',backup);
+ makeGroup('AI-anslutning',ai);
+ makeGroup('Familjeutmaningar',challenges);
+ oldSettings.remove();
+})();
+</script>
+<style id="balans58styles">
+.steps-home58 .big{font-size:25px!important;margin:4px 0!important}.steps-home58{padding:11px 12px!important}
+#stepsBars58{min-height:88px;height:88px!important}#stepsAxis58{margin-top:3px}#stepsBars58.month57{gap:2px!important}
+</style>
+<script>
+/* Balans 5.8: daily steps are stored inside balans_v1, included in existing JSON backups. */
+(function(){
+  if(!data.steps || typeof data.steps!=='object' || Array.isArray(data.steps))data.steps={};
+  const number58=n=>Number(n).toLocaleString('sv-SE',{maximumFractionDigits:0});
+  const originalBlank58=blank; // Existing import resets missing steps to empty via the update wrapper.
+  function acceptSteps58(){
+    const url=new URL(location.href);
+    if(!url.searchParams.has('steps'))return;
+    const raw=url.searchParams.get('steps');
+    const val=Number(raw);
+    if(!/^\d{1,7}$/.test(raw||'')||!Number.isSafeInteger(val)||val>200000){toast('Ogiltigt stegvärde');return;}
+    const date=today();
+    // Repeated shortcut runs replace the snapshot for the same date, not add to it.
+    data.steps=data.steps||{};
+    data.steps[date]={count:val,updated:new Date().toISOString()};
+    try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){toast('Kunde inte spara stegen');return;}
+    // Remove the one-time query parameter to prevent accidental re-import on reload.
+    url.searchParams.delete('steps');
+    try{history.replaceState(history.state,'',url.pathname+url.search+url.hash);}catch(e){}
+    render();toast(number58(val)+' steg sparade');
+  }
+  function renderSteps58(){
+    const todayEntry=(data.steps||{})[today()];
+    const count=typeof todayEntry==='number'?todayEntry:todayEntry?.count;
+    const el=document.getElementById('stepsToday58');
+    if(el)el.textContent=Number.isFinite(Number(count))&&count!==undefined?number58(count)+' steg':'– steg';
+    const note=document.getElementById('stepsUpdated58');
+    if(note)note.textContent=todayEntry?'Senaste uppdatering '+(todayEntry.updated?new Date(todayEntry.updated).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'}):'via genväg'):'Kör genvägen för att uppdatera steg';
+    const period=document.querySelector('[data-period57].selected');
+    const n=period&&Number(period.dataset.period57)===30?30:7;
+    const now=new Date();now.setHours(12,0,0,0);
+    const dates=Array.from({length:n},(_,i)=>{const d=new Date(now);d.setDate(now.getDate()-(n-1)+i);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`});
+    const values=dates.map(d=>{const x=(data.steps||{})[d];const v=typeof x==='number'?x:x?.count;return Number.isFinite(Number(v))&&v!==undefined?Number(v):null});
+    const present=values.filter(x=>x!==null),max=Math.max(1,...present);
+    const bars=document.getElementById('stepsBars58'),axis=document.getElementById('stepsAxis58');
+    if(bars){bars.classList.toggle('month57',n===30);bars.innerHTML=values.map((v,i)=>`<div class="analysis-bar564 ${v===null?'empty':'active'}" style="height:${v===null?3:Math.max(4,Math.round(v/max*100))}%" title="${dates[i]}: ${v===null?'inga steg sparade':number58(v)+' steg'}"></div>`).join('')}
+    if(axis){axis.classList.toggle('month57',n===30);axis.innerHTML=dates.map((d,i)=>`<span>${n===30?(i%5===0||i===29?new Date(d+'T12:00:00').getDate():''):new Date(d+'T12:00:00').toLocaleDateString('sv-SE',{weekday:'short'}).replace('.','')}</span>`).join('')}
+    const avg=document.getElementById('stepsAverage58');if(avg)avg.textContent=present.length?'Snitt '+number58(Math.round(present.reduce((a,b)=>a+b,0)/present.length))+' / loggad dag':'Ingen data';
+    const txt=document.getElementById('stepsNote58');if(txt)txt.textContent=present.length?present.length+' av '+n+' dagar med stegdata · uppdateras via genvägen':'Kör genvägen för att spara dagens steg.';
+  }
+  const prevRender58=render;render=function(){prevRender58();renderSteps58()};
+  document.querySelectorAll('[data-period57]').forEach(b=>b.addEventListener('click',renderSteps58));
+  window.addEventListener('pageshow',()=>{acceptSteps58();renderSteps58()});
+  window.addEventListener('popstate',acceptSteps58);
+  acceptSteps58();renderSteps58();
+})();
+</script>
+
+<script>
+/* Balans 5.8.3: compatible with deployed /api/steps (X-Steps-Token, date/steps). */
+(function(){
+  const BASE='https://balans-ai.henrik-kusing.workers.dev';
+  const CODE='balans_steps_sync_code_v581';
+  const input=document.getElementById('stepsSyncCode581');
+  const status=document.getElementById('stepsSyncStatus581');
+  const saved=()=>localStorage.getItem(CODE)||'';
+  input.value=saved();
+  const say=t=>{status.textContent=t;};
+  let inFlight=false;
+  let lastSync=0;
+  async function sync(){
+    const code=saved();
+    if(code.length<16){say('Ange och spara stegtoken först.');return;}
+    if(inFlight)return;
+    inFlight=true;
+    say('Hämtar dagens steg…');
+    try{
+      const date=today();
+      const r=await fetch(BASE+'/api/steps?date='+encodeURIComponent(date),{
+        headers:{'X-Steps-Token':code},cache:'no-store'
+      });
+      if(!r.ok)throw Error('HTTP '+r.status);
+      const result=await r.json();
+      const remote=result.steps;
+      if(remote!==null&&remote!==undefined){
+        const count=Number(remote);
+        if(!Number.isSafeInteger(count)||count<0||count>100000)throw Error('Ogiltigt stegvärde från servern');
+        if(!data.steps||typeof data.steps!=='object')data.steps={};
+        const old=data.steps[date];
+        const oldCount=typeof old==='number'?old:old?.count;
+        if(oldCount!==count){
+          data.steps[date]={count,updated:new Date().toISOString()};
+          localStorage.setItem(KEY,JSON.stringify(data));
+          render();
+        }
+        say('Synkad '+new Date().toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'}));
+      }else{
+        say('Inga steg uppladdade för idag ännu. Kör genvägen.');
+      }
+      lastSync=Date.now();
+    }catch(e){say('Kunde inte synka: '+e.message+'. Kontrollera stegtoken och Worker.');}
+    finally{inFlight=false;}
+  }
+  document.getElementById('stepsSyncSave581').addEventListener('click',()=>{
+    const code=input.value.trim();
+    if(code.length<16){say('Stegtoken måste ha minst 16 tecken.');return;}
+    localStorage.setItem(CODE,code);
+    say('Stegtoken sparad på den här enheten.');
+    sync();
+  });
+  document.getElementById('stepsSyncNow581').addEventListener('click',sync);
+  window.addEventListener('pageshow',()=>{if(saved()&&Date.now()-lastSync>3000)sync();});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&saved())sync();});
+  window.addEventListener('focus',()=>{if(saved()&&Date.now()-lastSync>3000)sync();});
+  if(saved())sync();
+})();
+</script>
+<style id="balans582styles">
+.steps-goal582{margin-top:10px;max-width:460px;font-size:12px;color:#476b57}
+.steps-goal582 .progress{height:9px;margin:6px 0 0;background:#e6eee7}
+.steps-goal582 .progress i{transition:width .25s ease}
+.steps-goal582 strong{font-size:12px}
+</style>
+<script id="balans582script">
+/* Daily goal is a presentation-only feature. Stored steps and all other data remain unchanged. */
+(function(){
+ const GOAL=8000;
+ function updateGoal(){
+   const entry=(data.steps||{})[today()];
+   const raw=typeof entry==='number'?entry:entry?.count;
+   const valid=raw!==undefined&&raw!==null&&raw!==''&&Number.isSafeInteger(Number(raw))&&Number(raw)>=0;
+   const count=valid?Number(raw):0;
+   const format=n=>n.toLocaleString('sv-SE',{maximumFractionDigits:0});
+   document.getElementById('stepsGoalLabel582').textContent=valid?format(count)+' av '+format(GOAL)+' steg':'Mål: '+format(GOAL)+' steg · ingen mätning ännu';
+   document.getElementById('stepsGoalPercent582').textContent=valid?Math.round(count/GOAL*100)+' %':'–';
+   document.getElementById('stepsGoalBar582').style.width=Math.min(100,count/GOAL*100)+'%';
+ }
+ const previous=render;
+ render=function(){previous();updateGoal()};
+ document.querySelectorAll('[data-tab="home"]').forEach(b=>b.addEventListener('click',updateGoal));
+ window.addEventListener('pageshow',updateGoal);
+ updateGoal();
+})();
+</script>
+</body></html>
