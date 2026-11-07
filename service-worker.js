@@ -1,9 +1,10 @@
 // Balans 5.7.2: update-safe offline cache. No app data is modified.
-const CACHE='balans-offline-v5-7-2';
+const CACHE='balans-offline-v5-8-0';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-180.png'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);
-  await cache.addAll(ASSETS.map(path=>new Request(path,{cache:'reload'})));
+  // Cache optional assets individually: a missing icon must not prevent activation.
+  await Promise.allSettled(ASSETS.map(async path=>{const request=new Request(path,{cache:'reload'});const response=await fetch(request);if(response.ok)await cache.put(request,response);}));
   await self.skipWaiting();
 })()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{
