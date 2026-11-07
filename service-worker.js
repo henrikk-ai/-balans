@@ -1,5 +1,5 @@
 // Balans 5.7.2: update-safe offline cache. No app data is modified.
-const CACHE='balans-offline-v5-8-0';
+const CACHE='balans-offline-v5-8-3';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-180.png'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);
