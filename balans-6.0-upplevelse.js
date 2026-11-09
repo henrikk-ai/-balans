@@ -1,4 +1,4 @@
-/* Balans 6.0 beta v3.5 - compact overview, 7/30/90 day statistics, photo-first meal flow. */
+/* Balans 6.0 beta v3.6 - compact overview, 7/30/90 day statistics, photo-first meal flow. */
 (()=>{'use strict';
 const KEY='balans60_beta_personal_v1';
 const $=id=>document.getElementById(id);
@@ -42,7 +42,23 @@ function setupHome(){const home=$('home');if(!home)return;const meal=$('mealName
  const photoActions=take?.parentElement;
  if(photoActions)photoActions.classList.add('b35-photo-actions');const photoPreview=$('photoPreview');const photoLabel=Array.from(meal.querySelectorAll('label')).find(l=>l.textContent.trim()==='Bild till måltiden');if(photoActions&&photoPreview){const wrap=document.createElement('div');wrap.className='b34-photo';wrap.innerHTML='<div class="b34-kicker">Steg 1 · Välj bild</div>';meal.insertBefore(wrap,heading?.nextSibling||meal.firstChild);wrap.append(photoActions,photoPreview);if(photoLabel)photoLabel.remove();const text=document.createElement('div');text.className='b34-note';text.textContent='Ta ett nytt foto eller välj en sparad bild. AI-analys är frivillig.';wrap.append(text)}
  const mealName=$('mealName');if(mealName){const label=mealName.previousElementSibling;if(label&&label.tagName==='LABEL')label.textContent='Steg 2 · Kontrollera eller ange måltid';}
- const photoStatus=$('aiPhotoStatus60');if(photoStatus)photoStatus.setAttribute('aria-live','polite');
+ // Put the existing meal fields AFTER the optional AI analysis, without cloning inputs or losing listeners.
+ const photoStatus=$('aiPhotoStatus60');
+ if(photoStatus){
+  photoStatus.setAttribute('aria-live','polite');
+  const name=$('mealName');
+  const nameLabel=name?.previousElementSibling;
+  const mealGrid=$('mealType')?.closest('.grid');
+  if(name&&nameLabel?.tagName==='LABEL'&&mealGrid&&name.parentElement===meal&&mealGrid.parentElement===meal){
+   const stepTwo=document.createElement('div');
+   stepTwo.className='b36-step-two';
+   stepTwo.style.cssText='margin-top:20px;padding-top:17px;border-top:1px solid #dbe5dc';
+   photoStatus.after(stepTwo);
+   stepTwo.append(nameLabel,name,mealGrid);
+   nameLabel.textContent='Steg 2 · Kontrollera eller ange måltid';
+  }
+ }
+
  const quick=home.querySelector('.grid');if(quick){quick.classList.add('b34-compact')}
  const intro=document.createElement('div');intro.className='b34-kicker';intro.textContent='Dagens översikt · snabb registrering';home.insertBefore(intro,quick||home.firstChild);
 }
