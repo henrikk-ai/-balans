@@ -1,4 +1,4 @@
-/* Balans 6.0 beta - stegsynk v3.2 */
+/* Balans 6.0 beta - stegsynk v3.3; återställning av enstaka dag */
 (()=>{'use strict';
 const DATA_KEY='balans60_beta_personal_v1', TOKEN_KEY='balans60_beta_steps_token_v1';
 const WORKER='https://balans-ai.henrik-kusing.workers.dev';
@@ -7,8 +7,35 @@ const SUCCESS_INTERVAL=2*60*60*1000, RETRY_INTERVAL=15*60*1000;
 const $=id=>document.getElementById(id);
 const view=$('steps');if(!view||!$('homeSteps'))return;
 const card=document.createElement('div');card.className='card';card.id='stepSync60';
-card.innerHTML=`<div class="title">Synka mina steg <small class="muted">v3.2</small></div><p class="muted">Hämta steg som din iPhone-genväg skickat till Cloudflare.</p><details id="stepSettings60"><summary>Personlig steganslutning</summary><label for="stepToken60">Din personliga stegtoken</label><input id="stepToken60" type="password" autocomplete="off" placeholder="Stegtoken (minst 16 tecken)"><p class="muted">Token sparas lokalt på denna enhet, inte i säkerhetskopian.</p><div class="actions"><button type="button" class="btn secondary" id="saveStepToken60">Spara token</button><button type="button" class="btn secondary" id="forgetStepToken60">Ta bort token</button></div></details><label style="display:flex;align-items:center;gap:9px;font-weight:500;margin:14px 0 4px"><input id="autoSteps60" type="checkbox" style="width:auto" checked> Synka automatiskt när Balans öppnas</label><div class="actions"><button type="button" class="btn" id="syncSteps60">Hämta senaste 7 dagarna</button></div><p class="muted" id="stepSyncStatus60" role="status">Redo att synkronisera (v3.2).</p>`;
+card.innerHTML=`<div class="title">Synka mina steg <small class="muted">v3.3</small></div><p class="muted">Hämta steg som din iPhone-genväg skickat till Cloudflare.</p><details id="stepSettings60"><summary>Personlig steganslutning</summary><label for="stepToken60">Din personliga stegtoken</label><input id="stepToken60" type="password" autocomplete="off" placeholder="Stegtoken (minst 16 tecken)"><p class="muted">Token sparas lokalt på denna enhet, inte i säkerhetskopian.</p><div class="actions"><button type="button" class="btn secondary" id="saveStepToken60">Spara token</button><button type="button" class="btn secondary" id="forgetStepToken60">Ta bort token</button></div></details><label style="display:flex;align-items:center;gap:9px;font-weight:500;margin:14px 0 4px"><input id="autoSteps60" type="checkbox" style="width:auto" checked> Synka automatiskt när Balans öppnas</label><div class="actions"><button type="button" class="btn" id="syncSteps60">Hämta senaste 7 dagarna</button></div><p class="muted" id="stepSyncStatus60" role="status">Redo att synkronisera (v3.3).</p>`;
 view.append(card);
+// Separate, opt-in repair: never import the entire backup or alter other days.
+const recovery=document.createElement('div');recovery.className='card';recovery.id='stepRecovery60';
+recovery.innerHTML=`<div class="title">Återställ en dag från säkerhetskopia</div><p class="muted">Reparera endast 7 november 2026 om dagen visar 0 steg. Måltider, vikt, mål, bilder och andra datum ändras inte.</p><input type="file" id="stepRecoveryFile60" accept=".json,application/json" aria-label="Välj Balans-säkerhetskopia"><div class="actions"><button type="button" class="btn secondary" id="restoreStepDay60">Återställ 7 november</button></div><p class="muted" id="stepRecoveryStatus60" role="status">Välj din säkerhetskopia från 9 november.</p>`;
+view.append(recovery);
+const recoveryStatus=msg=>{$('stepRecoveryStatus60').textContent=msg;};
+$('restoreStepDay60').addEventListener('click',async e=>{
+ e.preventDefault();e.stopPropagation();const btn=$('restoreStepDay60'),file=$('stepRecoveryFile60').files?.[0];
+ if(!file)return recoveryStatus('Välj säkerhetskopian först.');
+ if(file.size>20*1024*1024)return recoveryStatus('Filen är för stor.');
+ btn.disabled=true;
+ try{
+  const backup=JSON.parse(await file.text());
+  if(backup?.format!=='balans-personal-backup'||backup?.version!==1||!Array.isArray(backup?.personal?.meals)||!Array.isArray(backup?.personal?.weights))throw Error('Filen är inte en giltig Balans-säkerhetskopia.');
+  const date='2026-11-07';const entry=backup.personal.steps?.[date];
+  const backupCount=Number(entry&&typeof entry==='object'?(entry.count??entry.steps):entry);
+  if(!Number.isInteger(backupCount)||backupCount<=0||backupCount>100000)throw Error('Säkerhetskopian saknar ett positivt stegvärde för 7 november.');
+  const {raw,d}=readSaved();const oldEntry=d.steps[date];
+  const current=Number(oldEntry&&typeof oldEntry==='object'?(oldEntry.count??oldEntry.steps):oldEntry);
+  if(Number.isFinite(current)&&current>=backupCount){recoveryStatus('Ingen återställning behövs: '+current.toLocaleString('sv-SE')+' steg finns redan sparade för 7 november.');return;}
+  if(!confirm('Återställ enbart 7 november till '+backupCount.toLocaleString('sv-SE')+' steg? Övriga uppgifter och datum lämnas orörda.'))return;
+  if(typeof window.balans60UpdateSteps!=='function')throw Error('Huvudappens stegkoppling saknas.');
+  window.balans60UpdateSteps({[date]:{count:backupCount,updated:new Date().toISOString()}},raw);
+  recoveryStatus('Klart: 7 november har '+backupCount.toLocaleString('sv-SE')+' steg. Övriga uppgifter är oförändrade.');
+ }catch(err){recoveryStatus('Återställning avbruten: '+err.message+' Inget ändrades vid fel.');}
+ finally{btn.disabled=false;}
+});
+
 const status=s=>{$('stepSyncStatus60').textContent=s;};
 const tokenInput=$('stepToken60');try{tokenInput.value=localStorage.getItem(TOKEN_KEY)||'';}catch(e){status('Lokal lagring blockerad: '+e.message);}
 $('stepSettings60').open=!tokenInput.value;
@@ -40,13 +67,13 @@ async function syncSteps(automatic=false){
   }
   if(!fetched.length){markSuccess();status('Inga steg hittades på servern för senaste 7 dagarna. Inget ändrat.');return;}
   const {raw,d}=readSaved();const updated={};let skipped=0;
-  for(const {date,count} of fetched){const prev=d.steps[date];const old=Number(prev&&typeof prev==='object'?(prev.count??prev.steps):prev);if(count===0&&Number.isFinite(old)&&old>0){skipped++;continue;}if(Number.isFinite(old)&&old===count)continue;updated[date]={count,updated:new Date().toISOString()};}
-  if(!Object.keys(updated).length){markSuccess();status('Klart: inga nya steg. '+skipped+' nollvärden skyddades.');return;}
+  for(const {date,count} of fetched){const prev=d.steps[date];const old=Number(prev&&typeof prev==='object'?(prev.count??prev.steps):prev);if(Number.isFinite(old)&&old>0&&count<old){skipped++;continue;}if(Number.isFinite(old)&&old===count)continue;updated[date]={count,updated:new Date().toISOString()};}
+  if(!Object.keys(updated).length){markSuccess();status('Klart: inga nya steg. '+skipped+' lägre värden skyddades.');return;}
   if(localStorage.getItem(DATA_KEY)!==raw)throw Error('Lokala data ändrades under hämtningen. Försök igen.');
   if(typeof window.balans60UpdateSteps!=='function')throw Error('Huvudappen saknar stegkoppling v3.1. Kontrollera att båda filerna är uppdaterade.');
   window.balans60UpdateSteps(updated,raw);
   markSuccess();
-  status('Klart! '+Object.keys(updated).length+' dagar uppdaterade. '+(skipped?skipped+' nollvärden ignorerades.':'')+' Du är kvar på Steg.');
+  status('Klart! '+Object.keys(updated).length+' dagar uppdaterade. '+(skipped?skipped+' lägre värden ignorerades.':'')+' Du är kvar på Steg.');
  }catch(err){status('Synkronisering misslyckades: '+(err.name==='AbortError'?'Tidsgräns mot Cloudflare':err.message)+'. Inga steg ändrades vid fel.');}
  finally{busy=false;btn.disabled=false;}
 }
