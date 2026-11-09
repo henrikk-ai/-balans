@@ -1,0 +1,8 @@
+{
+  "appId": "se.kusing.balans",
+  "appName": "Balans",
+  "webDir": "www",
+  "server": {
+    "iosScheme": "capacitor"
+  }
+}
