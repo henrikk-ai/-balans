@@ -66,7 +66,7 @@ $('syncSteps60').addEventListener('click',async()=>{
   localStorage.setItem(DATA_KEY,JSON.stringify(saved));
   const message='Synkronisering klar: '+changed+' dagar uppdaterade.'+(skippedZeros?' '+skippedZeros+' nollvarden ignorerades.':'');
   try{sessionStorage.setItem(RETURN_KEY,message);}catch(e){}
-  location.reload();
+  document.querySelector('[data-go="steps"]')?.click();
  }catch(e){status('Synkronisering misslyckades: '+(e.name==='AbortError'?'Tidsgrans for anslutningen':e.message)+'. Inga lokala steg andrades av detta forsok.');}
  finally{busy=false;btn.disabled=false;}
 });
