@@ -1,4 +1,4 @@
-/* Balans 6.0 beta v3.8 - enhanced statistics, compact overview, 7/30/90 day statistics, photo-first meal flow. */
+/* Balans 6.0 beta v3.9 - enhanced statistics, compact overview, 7/30/90 day statistics, photo-first meal flow. */
 (()=>{'use strict';
 const KEY='balans60_beta_personal_v1';
 const $=id=>document.getElementById(id);
@@ -86,7 +86,7 @@ function setupHome(){const home=$('home');if(!home)return;const meal=$('mealName
  const intro=document.createElement('div');intro.className='b34-kicker';intro.textContent='Dagens översikt · snabb registrering';home.insertBefore(intro,quick||home.firstChild);
 }
 
-function setupLayout38(){
+function setupLayout39(){
  const weight=$('weight');
  if(weight){
   const summary=$('weightNow')?.closest('.card');
@@ -94,13 +94,9 @@ function setupLayout38(){
   const stats=$('b34-weight');
   const history=$('weightList')?.closest('.card');
   if(summary&&entry&&stats&&history){
-   // Keep the summary first and the existing registration controls immediately after it.
-   summary.after(entry);
-   entry.after(stats);
-   stats.after(history);
-   // The original chart duplicates the new period-aware chart. Hide it without
-   // removing its SVG node, which the main app still updates during render().
-   const oldChart=$('weightChart');if(oldChart)oldChart.hidden=true;
+   // append() MOVES existing nodes. No inputs, listeners or user data are recreated.
+   weight.append(summary,entry,stats,history);
+   const oldChart=$('weightChart');if(oldChart){oldChart.hidden=true;oldChart.style.display='none';}
    const btn=$('addWeight');if(btn)btn.textContent='Spara vikt';
   }
  }
@@ -111,29 +107,32 @@ function setupLayout38(){
   const stats=$('b34-steps');
   const history=$('stepsList')?.closest('.card');
   if(oldSummary&&stats&&history){
-   const todayCard=document.createElement('div');todayCard.className='card b38-today';todayCard.id='b38-today';
-   todayCard.innerHTML='<div class="eyebrow">Dagens steg</div><div class="big" id="b38-today-count">–</div><div class="row"><span class="muted" id="b38-today-goal">Mål: – steg</span><strong id="b38-today-pct">–</strong></div><div class="bar"><i id="b38-today-bar" style="width:0%"></i></div>';
-   oldSummary.before(todayCard);
-   // The sync addon inserts its own card. Move the existing node (do not clone).
-   if(sync)todayCard.after(sync);
-   (sync||todayCard).after(stats);
-   stats.after(history);
-   // Preserve the old latest-day panel for older entries, below history.
-   history.after(oldSummary);oldSummary.hidden=true;
+   let todayCard=$('b39-today');
+   if(!todayCard){
+    todayCard=document.createElement('div');todayCard.className='card b38-today';todayCard.id='b39-today';
+    todayCard.innerHTML='<div class="eyebrow">Dagens steg</div><div class="big" id="b38-today-count">–</div><div class="row"><span class="muted" id="b38-today-goal">Mål: – steg</span><strong id="b38-today-pct">–</strong></div><div class="bar"><i id="b38-today-bar" style="width:0%"></i></div>';
+   }
+   steps.append(todayCard);
+   if(sync)steps.append(sync);
+   steps.append(stats,history,oldSummary);
+   oldSummary.hidden=true;
   }
  }
- const style=document.createElement('style');style.textContent=`
- #weight #weightChart[hidden],#steps .card[hidden]{display:none!important}
- #weight .card:has(#weightChart){padding-bottom:14px}
- #weight .card:has(#newWeight){border-color:#cbded0}
- #weight .card:has(#newWeight) .btn{min-width:155px}
- #steps .b38-today .big{font-size:40px;margin:12px 0 8px}
- #steps .b38-today .bar{margin-top:14px}
- #steps .b38-today .row strong{color:#26654f;font-size:13px}
- `;document.head.append(style);
+ if(!$('b39-style')){
+  const style=document.createElement('style');style.id='b39-style';style.textContent=`
+  #weight #weightChart{display:none!important}
+  #weight .card:has(#weightChart){padding-bottom:14px}
+  #weight .card:has(#newWeight){border-color:#cbded0}
+  #weight .card:has(#newWeight) .btn{min-width:155px}
+  #steps .card[hidden]{display:none!important}
+  #steps .b38-today .big{font-size:40px;margin:12px 0 8px}
+  #steps .b38-today .bar{margin-top:14px}
+  #steps .b38-today .row strong{color:#26654f;font-size:13px}
+  `;document.head.append(style);
+ }
 }
 function updateToday38(){
- const host=$('b38-today');if(!host)return;
+ const host=$('b39-today');if(!host)return;
  const data=read();if(!data)return;
  const raw=data.steps?.[dayOffset(0)];
  const val=raw&&typeof raw==='object'?(raw.count??raw.steps):raw;
@@ -147,6 +146,6 @@ function updateToday38(){
 }
 
 function refresh(){updateStats();updateToday38()}
-function init(){if($('b34-weight'))return;setupHome();setupStats();setupLayout38();refresh();window.balans60EnhanceRender=refresh;window.addEventListener('storage',e=>{if(e.key===KEY)refresh()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});}
+function init(){if($('b34-weight'))return;setupHome();setupStats();setupLayout39();refresh();window.balans60EnhanceRender=refresh;window.addEventListener('load',()=>{setupLayout39();refresh()},{once:true});window.addEventListener('storage',e=>{if(e.key===KEY)refresh()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
