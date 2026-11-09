@@ -30,6 +30,32 @@ async function dbWrite(photo){const db=await dbOpen();try{await new Promise((ok,
 async function dbReplace(items){const db=await dbOpen();try{await new Promise((ok,no)=>{const tx=db.transaction('photos','readwrite'),st=tx.objectStore('photos');st.clear();items.forEach(x=>st.put(x));tx.oncomplete=()=>ok();tx.onerror=()=>no(tx.error);tx.onabort=()=>no(tx.error)})}finally{db.close()}}
 function persist(){localStorage.setItem(DATA_KEY,JSON.stringify(data));localStorage.setItem(FAV_KEY,JSON.stringify(favorites))}
 window.balans60UpdateSteps=function(updates,expectedRaw){if(!updates||typeof updates!=='object'||Array.isArray(updates))throw Error('Ogiltiga stegdata.');const raw=localStorage.getItem(DATA_KEY);if(!raw)throw Error('Ingen sparad beta-data.');if(expectedRaw!==undefined&&raw!==expectedRaw)throw Error('Lokala data ändrades under synkroniseringen.');const saved=JSON.parse(raw);if(!Array.isArray(saved.meals)||!Array.isArray(saved.weights))throw Error('Ogiltigt lokalt dataformat.');saved.steps={...(saved.steps||{}),...updates};localStorage.setItem(DATA_KEY,JSON.stringify(saved));data=saved;render();return true};
+window.balans60MealAction=async function(action,id,patch){
+ const raw=localStorage.getItem(DATA_KEY);
+ if(!raw)throw Error('Ingen sparad lokal data.');
+ const current=JSON.parse(raw);
+ if(!Array.isArray(current.meals)||!Array.isArray(current.weights))throw Error('Ogiltigt dataformat.');
+ const idx=current.meals.findIndex(m=>String(m.id)===String(id));
+ if(idx<0)throw Error('Måltiden finns inte längre.');
+ if(action==='edit'){
+  const name=String(patch.name||'').trim().slice(0,200);
+  const calories=Number(patch.calories);
+  if(!name||!Number.isFinite(calories)||calories<0||calories>100000)throw Error('Kontrollera namn och kalorier.');
+  const types=['Frukost','Lunch','Middag','Mellanmål'];
+  if(!types.includes(patch.type))throw Error('Ogiltig måltidstyp.');
+  const nutrients={};
+  for(const k of ['protein','carbs','fat']){
+   if(patch[k]===null||patch[k]==='')nutrients[k]=null;
+   else{const v=Number(patch[k]);if(!Number.isFinite(v)||v<0||v>10000)throw Error('Ogiltigt näringsvärde.');nutrients[k]=v;}
+  }
+  current.meals[idx]={...current.meals[idx],name,type:patch.type,calories,...nutrients};
+ }else if(action==='delete')current.meals.splice(idx,1);
+ else throw Error('Okänd åtgärd.');
+ if(localStorage.getItem(DATA_KEY)!==raw)throw Error('Data ändrades under tiden. Försök igen.');
+ localStorage.setItem(DATA_KEY,JSON.stringify(current));
+ data=current;render();
+ return true;
+};
 async function init(){try{const raw=localStorage.getItem(DATA_KEY);if(raw){const d=JSON.parse(raw);if(Array.isArray(d.meals)&&Array.isArray(d.weights)){data=d;data.steps ||= {};data.water ||= {};data.profile ||= {}}}favorites=JSON.parse(localStorage.getItem(FAV_KEY)||'[]');photos=await dbRead();$('backupStatus').textContent='Lokal Balans 6.0-data laddad: '+data.meals.length+' måltider, '+photos.length+' bilder.';render()}catch(e){$('backupStatus').textContent='Kunde inte läsa lokal data: '+e.message}}
 const fmt=v=>Number(v).toLocaleString('sv-SE');function go(id){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));window.scrollTo(0,0)}document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();go(b.dataset.go)}));
 function validate(b){if(!b||b.format!=='balans-personal-backup'||b.version!==1||!b.personal||!Array.isArray(b.personal.meals)||!Array.isArray(b.personal.weights)||!b.personal.profile||!Array.isArray(b.photos)||!Array.isArray(b.favorites))throw Error('Ogiltigt Balans-backupformat');return b}
@@ -46,5 +72,6 @@ function render(){const weights=[...data.weights].sort((a,b)=>String(a.date).loc
 init();})();
 </script>
 <script src="./balans-6.0-stegsync.js?v=33" defer></script>
-<script src="./balans-6.0-upplevelse.js?v=39" defer></script>
+<script src="./balans-6.0-upplevelse.js?v=40" defer></script>
+<script src="./balans-6.0-mat.js?v=40" defer></script>
 </body></html>
