@@ -1,85 +1,161 @@
-<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#173e33"><title>Balans 6.0 – Lokal beta v4.9</title><style>
-:root{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#173d32;background:#edf2ed}*{box-sizing:border-box}body{margin:0;padding:0 0 92px}header{background:#173e33;color:#fff;padding:26px 20px 22px;border-radius:0 0 28px 28px}header .top{display:flex;align-items:center;justify-content:space-between}header h1{font-size:29px;letter-spacing:-1px;margin:4px 0}header p{margin:4px 0;color:#d4e5da;font-size:13px}.tag{border:1px solid #9ebbaa;border-radius:99px;padding:6px 10px;font-size:11px}main{max-width:620px;margin:auto;padding:16px}.view{display:none}.view.active{display:block}.card{background:white;border:1px solid #dbe5dc;border-radius:22px;padding:19px;margin-bottom:13px;box-shadow:0 2px 10px #153c3210}.eyebrow{color:#687d71;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}.big{font-size:32px;font-weight:750;letter-spacing:-1px;margin:8px 0}.muted{color:#687a70;font-size:13px}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid .card{margin:0}.pill{display:inline-block;background:#e7eee8;padding:7px 11px;border-radius:30px;font-size:12px;font-weight:650}.btn{border:0;border-radius:13px;background:#26654f;color:white;padding:12px 15px;font-size:14px;font-weight:700;cursor:pointer}.btn.secondary{background:#e5ede6;color:#194a38}.btn:disabled{opacity:.45}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.item{padding:12px 0;border-bottom:1px solid #e8eee9}.item:last-child{border:0}.item strong{font-size:14px}.item small{display:block;color:#77867b;margin-top:4px}.bar{height:9px;border-radius:10px;background:#e8eee8;overflow:hidden;margin-top:10px}.bar i{display:block;height:100%;background:#b08a57}.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e1e8e2;padding:9px 6px calc(9px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);z-index:5}.nav button{background:none;border:0;color:#7a897d;font-size:10px;font-weight:650;padding:5px 0}.nav button.active{color:#1e6048}.nav span{display:block;font-size:23px;margin-bottom:4px}h2{font-size:20px;letter-spacing:-.4px;margin:8px 0 14px}label{display:block;font-size:12px;font-weight:700;margin:12px 0 5px}input,select{width:100%;padding:12px;border:1px solid #d5e2d7;border-radius:12px;background:white;color:#173d32;font:inherit}input[type=file]{font-size:12px}svg{width:100%;height:140px}.note{background:#fff8e9;border:1px solid #eadfca;border-radius:14px;padding:12px;font-size:12px;color:#72552d;margin-bottom:14px}.empty{color:#829086;font-size:14px;padding:20px 0}.mini{font-size:12px;color:#607769}.title{font-size:16px;font-weight:750;margin:0 0 10px}.photo{width:100%;max-height:220px;object-fit:cover;border-radius:13px;margin-top:12px}details summary{cursor:pointer;font-weight:700;padding:6px 0}a{color:#22674d}
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#173e33">
+  <title>Balans 6.1 – Starttest</title>
 
-/* Balans 6.0 beta v3.4: compact dashboard and statistics */
-header{padding:20px 18px 18px}main{padding:12px}.card{padding:16px;margin-bottom:11px;border-radius:20px}h2{margin:7px 0 12px}.big{font-size:29px}.grid{gap:9px}.nav{box-shadow:0 -4px 18px #173e3310}.b34-kicker{font-size:11px;color:#698173;font-weight:750;text-transform:uppercase;letter-spacing:.07em}.b34-photo{background:#f4f7f2;border:1px solid #dfe8dd;padding:12px;border-radius:16px;margin:12px 0}.b34-photo .actions{margin-top:8px}.b34-photo .btn{flex:1;min-width:125px}.b34-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.b34-stat>div{background:#f2f6f1;border-radius:12px;padding:11px 8px}.b34-stat strong{display:block;font-size:18px}.b34-stat small{color:#708276;font-size:11px}.b34-range{display:flex;gap:6px;margin:10px 0}.b34-range button{border:1px solid #d9e5dc;background:white;border-radius:18px;padding:7px 13px;color:#24523f;font-weight:700}.b34-range button[aria-pressed=true]{background:#245f4b;color:white}.b34-graph{width:100%;height:145px;display:block}.b34-note{font-size:12px;color:#687a70}.b34-photo img{max-height:170px}.b34-compact .title{margin-bottom:5px}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-/* Balans v3.5: foto above Mat idag, refined touch targets */
-.b35-photo-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px!important}
-.b35-photo-actions .btn{width:100%;min-width:0!important;min-height:54px;padding:12px 9px;border-radius:15px;font-size:15px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 5px #153c3214;transition:transform .12s ease,background .12s ease}
-.b35-photo-actions .btn:active{transform:scale(.98)}
-.b35-photo-actions .b35-camera{background:#26654f;color:#fff}
-.b35-photo-actions .b35-camera:before{content:'📷';font-size:19px}
-.b35-photo-actions .b35-gallery{background:#e5eee7;color:#174b39;border:1px solid #d4e2d6}
-.b35-photo-actions .b35-gallery:before{content:'▧';font-size:21px;line-height:1}
-#home>.card:has(#mealName){margin-top:14px}
-#home>.card:has(#homeCal){margin-top:0!important}
-@media(max-width:360px){.b35-photo-actions{gap:7px}.b35-photo-actions .btn{font-size:13px;padding:10px 5px}}
-</style></head><body><div id="balans-starttest" style="position:fixed;top:65px;left:15px;right:15px;z-index:99999;background:white;color:#173e33;padding:20px;border:3px solid green;border-radius:12px;font-size:18px">Balans 6.1 – HTML har laddats!</div><header><div class="top"><div><p>DIN PERSONLIGA HÄLSA</p><h1>Balans <span style="font-weight:300">6.0</span></h1></div><span class="tag">LOKAL BETA v5.0</span></div><p>Enklare vardag. Tydligare framsteg.</p></header><main><div class="note"><strong>Balans 6.0 – separat beta.</strong> Registreringar sparas lokalt i egna Balans 6.0-nycklar och rör inte din gamla app. Säkerhetskopiera regelbundet. AI-foton skickas endast efter ditt godkännande. Apple Hälsa är ännu inte ansluten.</div>
-<section id="home" class="view active"><h2>Din översikt</h2><div class="grid"><div class="card"><div class="eyebrow">Senaste vikt</div><div class="big" id="homeWeight">–</div><div class="muted">kg</div></div><div class="card"><div class="eyebrow">Dagens steg</div><div class="big" id="homeSteps">–</div><div class="muted" id="stepGoalLabel">Mål: – steg</div></div></div><div class="card" style="margin-top:12px"><div class="row"><div><div class="eyebrow">Mat idag</div><div class="big" id="homeCal">0 kcal</div></div><div class="pill" id="homeMealCount">0 måltider</div></div><div class="bar"><i id="calBar" style="width:0%"></i></div><div class="muted" style="margin-top:9px" id="calGoal">Dagsmål: – kcal</div></div><div class="card"><div class="title">Registrera måltid med foto</div><label for="mealName">Vad åt du?</label><input id="mealName" placeholder="Ex. kyckling med ris"><div class="grid"><div><label for="mealType">Måltid</label><select id="mealType"><option>Frukost</option><option>Lunch</option><option>Middag</option><option>Mellanmål</option></select></div><div><label for="mealCalories">Kalorier</label><input id="mealCalories" type="number" min="0" placeholder="kcal"></div></div><label>Bild till måltiden</label><div class="actions"><button type="button" class="btn secondary" id="takePhotoBtn">📷 Ta foto</button><button type="button" class="btn secondary" id="choosePhotoBtn">🖼️ Välj från bilder</button></div><input type="file" id="mealPhotoCamera" accept="image/*" capture="environment" style="display:none"><input type="file" id="mealPhoto" accept="image/*" style="display:none"><img id="photoPreview" class="photo" alt="Valt måltidsfoto" hidden><div class="muted" style="margin-top:8px">Bilden sparas lokalt med måltiden när du trycker Spara. Den skickas till AI bara efter ditt godkännande.</div><details style="margin-top:14px"><summary>AI-anslutning för fototest</summary><label for="aiWorker60">Cloudflare Worker-adress</label><input id="aiWorker60" type="url" value="https://balans-ai.henrik-kusing.workers.dev"><label for="aiCode60">Din befintliga AI-kod</label><input id="aiCode60" type="password" autocomplete="off" placeholder="Ange kod (sparas inte)"><p class="muted">Koden används för AI-anrop och sparas inte i säkerhetskopian.</p></details><label style="font-weight:500"><input type="checkbox" id="aiConsent60" style="width:auto;margin-right:8px">Jag godkänner att fotot skickas till min AI-tjänst för analys.</label><div class="actions"><button type="button" class="btn secondary" id="analyzePhoto60">✨ Analysera foto med AI</button></div><p class="muted" id="aiPhotoStatus60" role="status">Ingen analys gjord.</p><div class="actions"><button type="button" id="addMeal" class="btn">Spara måltid</button></div></div><div class="card"><div class="title">Snabbval</div><div class="actions"><button type="button" class="btn" data-go="food">+ Måltid</button><button type="button" class="btn secondary" data-go="weight">+ Vikt</button><button type="button" class="btn secondary" data-go="steps">Se steg</button></div></div><div class="card"><div class="title">Din senaste aktivitet</div><div id="recent" class="empty">Läs in din säkerhetskopia under Profil.</div></div></section>
-<section id="food" class="view"><h2>Matdagbok</h2><p class="muted">Registrera nya måltider och ta foton direkt på startsidan Idag.</p><div class="card"><div class="row"><div class="title">Måltider</div><span class="pill" id="mealTotal">0 st</span></div><div id="mealList" class="empty">Inga måltider ännu.</div></div></section>
-<section id="weight" class="view"><h2>Vikt & utveckling</h2><div class="card"><div class="row"><div><div class="eyebrow">Aktuell vikt</div><div class="big" id="weightNow">– kg</div></div><div><div class="eyebrow">Målvikt</div><div class="big" id="weightGoal">– kg</div></div></div><svg viewBox="0 0 320 140" role="img" aria-label="Viktkurva" id="weightChart"><text x="10" y="75" fill="#77877c" font-size="12">Ingen vikthistorik</text></svg></div><div class="card"><div class="title">Registrera vikt</div><label for="newWeight">Vikt i kg</label><input type="number" step="0.1" min="20" max="500" id="newWeight" placeholder="Ex. 102,5"><div class="actions"><button type="button" class="btn" id="addWeight">Spara vikt</button></div></div><div class="card"><div class="title">Historik</div><div id="weightList" class="empty">Inga vägningar.</div></div></section>
-<section id="steps" class="view"><h2>Steg & aktivitet</h2><div class="card"><div class="eyebrow">Senast registrerade dag</div><div class="big" id="stepLatest">– steg</div><div class="muted" id="stepLatestDate">Ingen steghistorik</div><div class="bar"><i id="stepsBar" style="width:0%"></i></div><p class="muted">Steg från säkerhetskopian och Cloudflare-synkroniseringen visas här.</p></div><div class="card"><div class="title">Steghistorik</div><div id="stepsList" class="empty">Inga steg registrerade.</div></div></section>
-<section id="profile" class="view"><h2>Profil & säkerhetskopia</h2><div class="card"><div class="title">Läs in dina uppgifter</div><p class="muted">Välj en säkerhetskopia och bekräfta om du vill importera den till den separata Balans 6.0-lagringen. Din gamla Balans påverkas inte.</p><input type="file" accept=".json,application/json" id="backupFile"><div class="actions"><button type="button" class="btn secondary" id="exportBackup60">Exportera komplett säkerhetskopia</button></div><p class="muted" id="backupStatus" role="status">Ingen säkerhetskopia inläst.</p></div><div class="card"><div class="title">Mina mål</div><label for="profileName">Namn</label><input id="profileName" placeholder="Ditt namn"><div class="grid"><div><label for="goalWeight">Målvikt (kg)</label><input id="goalWeight" type="number" step="0.1"></div><div><label for="goalCal">Kalorimål</label><input id="goalCal" type="number"></div></div><label for="goalSteps">Stegmål</label><input id="goalSteps" type="number"><div class="actions"><button type="button" class="btn" id="saveProfile">Spara mina mål</button></div></div><div class="card"><details><summary>Om Balans 6.0</summary><p class="muted">Familjevy och AI-chatt är borttagna ur denna beta. Denna version använder egna lokala nycklar och påverkar inte din äldre Balans-app.</p></details></div></section></main>
-<nav class="nav"><button type="button" class="active" data-go="home"><span>⌂</span>Idag</button><button type="button" data-go="food"><span>◫</span>Mat</button><button type="button" data-go="weight"><span>↗</span>Vikt</button><button type="button" data-go="steps"><span>♧</span>Steg</button><button type="button" data-go="profile"><span>⚙</span>Profil</button></nav>
-<script>
-(()=>{'use strict';const $=id=>document.getElementById(id),today=()=>new Date().toLocaleDateString('sv-SE'),num=v=>Number(v)||0;const DATA_KEY='balans60_beta_personal_v1',FAV_KEY='balans60_beta_favorites_v1',DB_NAME='balans60_beta_photos_v1';let data={meals:[],weights:[],steps:{},water:{},profile:{}},photos=[],pendingPhotoFile=null,aiMeal60=null,favorites=[];
-function dbOpen(){return new Promise((ok,no)=>{const r=indexedDB.open(DB_NAME,1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('photos'))r.result.createObjectStore('photos',{keyPath:'id'})};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
-async function dbRead(){const db=await dbOpen();try{return await new Promise((ok,no)=>{const tx=db.transaction('photos','readonly'),r=tx.objectStore('photos').getAll();r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);tx.onabort=()=>no(tx.error)})}finally{db.close()}}
-async function dbWrite(photo){const db=await dbOpen();try{await new Promise((ok,no)=>{const tx=db.transaction('photos','readwrite');tx.objectStore('photos').put(photo);tx.oncomplete=()=>ok();tx.onerror=()=>no(tx.error);tx.onabort=()=>no(tx.error)})}finally{db.close()}}
-async function dbReplace(items){const db=await dbOpen();try{await new Promise((ok,no)=>{const tx=db.transaction('photos','readwrite'),st=tx.objectStore('photos');st.clear();items.forEach(x=>st.put(x));tx.oncomplete=()=>ok();tx.onerror=()=>no(tx.error);tx.onabort=()=>no(tx.error)})}finally{db.close()}}
-function persist(){localStorage.setItem(DATA_KEY,JSON.stringify(data));localStorage.setItem(FAV_KEY,JSON.stringify(favorites))}
-window.balans60UpdateSteps=function(updates,expectedRaw){if(!updates||typeof updates!=='object'||Array.isArray(updates))throw Error('Ogiltiga stegdata.');const raw=localStorage.getItem(DATA_KEY);if(!raw)throw Error('Ingen sparad beta-data.');if(expectedRaw!==undefined&&raw!==expectedRaw)throw Error('Lokala data ändrades under synkroniseringen.');const saved=JSON.parse(raw);if(!Array.isArray(saved.meals)||!Array.isArray(saved.weights))throw Error('Ogiltigt lokalt dataformat.');saved.steps={...(saved.steps||{}),...updates};localStorage.setItem(DATA_KEY,JSON.stringify(saved));data=saved;render();return true};
-window.balans60MealAction=async function(action,id,patch){
- const raw=localStorage.getItem(DATA_KEY);
- if(!raw)throw Error('Ingen sparad lokal data.');
- const current=JSON.parse(raw);
- if(!Array.isArray(current.meals)||!Array.isArray(current.weights))throw Error('Ogiltigt dataformat.');
- const idx=current.meals.findIndex(m=>String(m.id)===String(id));
- if(idx<0)throw Error('Måltiden finns inte längre.');
- if(action==='edit'){
-  const name=String(patch.name||'').trim().slice(0,200);
-  const calories=Number(patch.calories);
-  if(!name||!Number.isFinite(calories)||calories<0||calories>100000)throw Error('Kontrollera namn och kalorier.');
-  const types=['Frukost','Lunch','Middag','Mellanmål'];
-  if(!types.includes(patch.type))throw Error('Ogiltig måltidstyp.');
-  const nutrients={};
-  for(const k of ['protein','carbs','fat']){
-   if(patch[k]===null||patch[k]==='')nutrients[k]=null;
-   else{const v=Number(patch[k]);if(!Number.isFinite(v)||v<0||v>10000)throw Error('Ogiltigt näringsvärde.');nutrients[k]=v;}
-  }
-  current.meals[idx]={...current.meals[idx],name,type:patch.type,calories,...nutrients};
- }else if(action==='delete')current.meals.splice(idx,1);
- else throw Error('Okänd åtgärd.');
- if(localStorage.getItem(DATA_KEY)!==raw)throw Error('Data ändrades under tiden. Försök igen.');
- localStorage.setItem(DATA_KEY,JSON.stringify(current));
- data=current;render();
- return true;
-};
-async function init(){try{const raw=localStorage.getItem(DATA_KEY);if(raw){const d=JSON.parse(raw);if(Array.isArray(d.meals)&&Array.isArray(d.weights)){data=d;data.steps ||= {};data.water ||= {};data.profile ||= {}}}favorites=JSON.parse(localStorage.getItem(FAV_KEY)||'[]');photos=await dbRead();$('backupStatus').textContent='Lokal Balans 6.0-data laddad: '+data.meals.length+' måltider, '+photos.length+' bilder.';render()}catch(e){$('backupStatus').textContent='Kunde inte läsa lokal data: '+e.message}}
-const fmt=v=>Number(v).toLocaleString('sv-SE');function go(id){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));window.scrollTo(0,0)}document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();go(b.dataset.go)}));
-function validate(b){if(!b||b.format!=='balans-personal-backup'||b.version!==1||!b.personal||!Array.isArray(b.personal.meals)||!Array.isArray(b.personal.weights)||!b.personal.profile||!Array.isArray(b.photos)||!Array.isArray(b.favorites))throw Error('Ogiltigt Balans-backupformat');return b}
-$('backupFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>150*1024*1024)throw Error('Filen är för stor');const b=validate(JSON.parse(await f.text()));if(!confirm(`Importera ${b.personal.meals.length} måltider, ${b.personal.weights.length} vägningar och ${b.photos.length} bilder till Balans 6.0-beta? Detta ersätter enbart befintliga beta-uppgifter. Exportera först beta-data om du vill behålla dem.`))return;const prevData=localStorage.getItem(DATA_KEY),prevFav=localStorage.getItem(FAV_KEY),prevPhotos=await dbRead();try{await dbReplace(b.photos);data=structuredClone(b.personal);data.steps ||= {};data.water ||= {};data.profile ||= {};favorites=b.favorites;photos=b.photos;persist()}catch(err){await dbReplace(prevPhotos);if(prevData===null)localStorage.removeItem(DATA_KEY);else localStorage.setItem(DATA_KEY,prevData);if(prevFav===null)localStorage.removeItem(FAV_KEY);else localStorage.setItem(FAV_KEY,prevFav);throw err}$('backupStatus').textContent=`Import klar: ${data.meals.length} måltider, ${data.weights.length} vägningar och ${photos.length} bilder. Endast Balans 6.0-beta har ändrats.`;render();go('home')}catch(err){$('backupStatus').textContent='Fel: '+err.message}finally{e.target.value=''}});
-$('exportBackup60').addEventListener('click',async()=>{const btn=$('exportBackup60');btn.disabled=true;try{const backup={format:'balans-personal-backup',version:1,createdAt:new Date().toISOString(),personal:data,favorites,challenge:null,photos:await dbRead()};const file=new File([JSON.stringify(backup)],'balans-6.0-sakerhetskopia-'+today()+'.json',{type:'application/json'});if(navigator.canShare?.({files:[file]})&&navigator.share){try{await navigator.share({files:[file],title:'Balans 6.0 säkerhetskopia'});$('backupStatus').textContent='Delningsmenyn stängd. Kontrollera att filen sparats i Filer.';return}catch(e){if(e.name==='AbortError')return}}const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);$('backupStatus').textContent='Export startad. Kontrollera att filen finns i Filer.'}catch(e){$('backupStatus').textContent='Exportfel: '+e.message}finally{btn.disabled=false}});
-$('takePhotoBtn').addEventListener('click',()=>{$('mealPhotoCamera').click()});$('choosePhotoBtn').addEventListener('click',()=>{$('mealPhoto').click()});function previewMealPhoto(e){const f=e.target.files?.[0];if(!f)return;pendingPhotoFile=f;aiMeal60=null;$('aiPhotoStatus60').textContent='Foto valt. Du kan nu analysera det med AI.';const u=URL.createObjectURL(f);$('photoPreview').src=u;$('photoPreview').hidden=false;$('photoPreview').onload=()=>URL.revokeObjectURL(u)}$('mealPhoto').addEventListener('change',previewMealPhoto);$('mealPhotoCamera').addEventListener('change',previewMealPhoto);
-async function imageData60(file){if(!file||!file.type.startsWith('image/'))throw Error('Välj en bildfil.');if(file.size>20*1024*1024)throw Error('Bilden är för stor (max 20 MB).');const bitmap=await createImageBitmap(file);try{const scale=Math.min(1,1280/Math.max(bitmap.width,bitmap.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(bitmap.width*scale));c.height=Math.max(1,Math.round(bitmap.height*scale));c.getContext('2d').drawImage(bitmap,0,0,c.width,c.height);return c.toDataURL('image/jpeg',0.76)}finally{bitmap.close()}}
-$('analyzePhoto60').addEventListener('click',async()=>{const btn=$('analyzePhoto60'),status=$('aiPhotoStatus60');if(!pendingPhotoFile){status.textContent='Välj ett foto först.';return}if(!$('aiConsent60').checked){status.textContent='Godkänn att fotot skickas först.';return}const url=$('aiWorker60').value.trim().replace(/\/+$/,''),code=$('aiCode60').value.trim();if(!/^https:\/\/[a-z0-9.-]+(?::\d+)?$/i.test(url)||!code){status.textContent='Ange giltig HTTPS Worker-adress och AI-kod.';return}btn.disabled=true;status.textContent='Förbereder bild och analyserar…';try{const image=await imageData60(pendingPhotoFile),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),45000);let r;try{r=await fetch(url+'/api/ai',{method:'POST',headers:{'Content-Type':'application/json','X-Balans-Code':code},body:JSON.stringify({type:'photo',image}),signal:controller.signal})}finally{clearTimeout(timer)}const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error||'AI-tjänsten svarade med '+r.status);const m=j.meal||{};if(!m.name)throw Error('AI-tjänsten returnerade inget måltidsförslag.');aiMeal60=m;$('mealName').value=String(m.name).slice(0,200);$('mealCalories').value=Number.isFinite(Number(m.calories))?Math.max(0,Math.round(Number(m.calories))):'';status.textContent='AI-förslag: '+m.name+' · '+(m.calories??'?')+' kcal. Kontrollera uppgifterna och tryck Spara måltid.'}catch(e){status.textContent='Analysen misslyckades: '+(e.name==='AbortError'?'Tidsgränsen passerades':e.message)}finally{btn.disabled=false}});
-window.balans60SetNutritionFromFood=function(v){aiMeal60={protein:v.protein,carbs:v.carbs,fat:v.fat};};$('addMeal').addEventListener('click',async()=>{const btn=$('addMeal'),name=$('mealName').value.trim();if(!name)return alert('Ange måltidens namn.');btn.disabled=true;try{const id=crypto.randomUUID();let image=null;if(pendingPhotoFile){image=await imageData60(pendingPhotoFile);await dbWrite({id,date:today(),image});photos=await dbRead()}data.meals.push({id,date:today(),type:$('mealType').value,name,calories:num($('mealCalories').value),protein:aiMeal60?.protein??null,carbs:aiMeal60?.carbs??null,fat:aiMeal60?.fat??null});persist();$('mealName').value='';$('mealCalories').value='';pendingPhotoFile=null;$('mealPhoto').value='';$('mealPhotoCamera').value='';$('photoPreview').hidden=true;aiMeal60=null;$('aiPhotoStatus60').textContent='Måltiden'+(image?' och fotot':'')+' sparades lokalt i Balans 6.0.';render()}catch(e){alert('Kunde inte spara: '+e.message)}finally{btn.disabled=false}});
-$('addWeight').addEventListener('click',()=>{const v=Number($('newWeight').value.replace(',','.'));if(!Number.isFinite(v)||v<20||v>500)return alert('Ange en giltig vikt.');data.weights.push({id:crypto.randomUUID(),date:today(),value:v});persist();$('newWeight').value='';render()});
-$('saveProfile').addEventListener('click',()=>{data.profile={...data.profile,name:$('profileName').value,goal:$('goalWeight').value,calories:$('goalCal').value,steps:$('goalSteps').value};persist();render();go('home')});
-function textRow(parent,primary,secondary,right){const d=document.createElement('div');d.className='item row';const l=document.createElement('div'),s=document.createElement('strong');s.textContent=primary;const small=document.createElement('small');small.textContent=secondary;l.append(s,small);const r=document.createElement('strong');r.textContent=right;d.append(l,r);parent.append(d)}
-function render(){const weights=[...data.weights].sort((a,b)=>String(a.date).localeCompare(String(b.date))),latest=weights.at(-1);$('homeWeight').textContent=latest?fmt(latest.value):'–';$('weightNow').textContent=latest?fmt(latest.value)+' kg':'– kg';$('weightGoal').textContent=data.profile.goal?fmt(data.profile.goal)+' kg':'– kg';const steps=Object.entries(data.steps||{}).sort((a,b)=>b[0].localeCompare(a[0]));const st=steps.find(x=>x[0]===today());$('homeSteps').textContent=st?fmt(st[1]?.count??st[1]):'–';$('stepGoalLabel').textContent='Mål: '+fmt(num(data.profile.steps))+' steg';$('stepLatest').textContent=steps.length?fmt(steps[0][1]?.count??steps[0][1])+' steg':'– steg';$('stepLatestDate').textContent=steps[0]?.[0]||'Ingen steghistorik';$('stepsBar').style.width=Math.min(100,100*num(steps[0]?.[1]?.count??steps[0]?.[1])/Math.max(1,num(data.profile.steps)))+'%';const meals=[...data.meals].sort((a,b)=>String(b.date).localeCompare(String(a.date))),todayMeals=meals.filter(m=>m.date===today()),kcal=todayMeals.reduce((s,m)=>s+num(m.calories),0);$('homeCal').textContent=fmt(kcal)+' kcal';$('homeMealCount').textContent=todayMeals.length+' måltider';$('calGoal').textContent='Dagsmål: '+fmt(num(data.profile.calories))+' kcal';$('calBar').style.width=Math.min(100,100*kcal/Math.max(1,num(data.profile.calories)))+'%';$('mealTotal').textContent=meals.length+' st';const recent=$('recent');recent.replaceChildren();if(meals[0])textRow(recent,meals[0].name,meals[0].date,fmt(num(meals[0].calories))+' kcal');if(latest)textRow(recent,'Vikt',latest.date,fmt(latest.value)+' kg');if(!recent.children.length)recent.textContent='Läs in din säkerhetskopia under Profil.';const mealList=$('mealList');mealList.replaceChildren();meals.slice(0,40).forEach(m=>textRow(mealList,m.name||'Måltid',(m.date||'')+' · '+(m.type||''),fmt(num(m.calories))+' kcal'));if(!meals.length)mealList.textContent='Inga måltider ännu.';const weightList=$('weightList');weightList.replaceChildren();weights.slice().reverse().slice(0,30).forEach(w=>textRow(weightList,'Vägning',w.date||'',fmt(w.value)+' kg'));if(!weights.length)weightList.textContent='Inga vägningar.';const stepList=$('stepsList');stepList.replaceChildren();steps.slice(0,30).forEach(([d,v])=>textRow(stepList,'Steg',d,fmt(v?.count??v)));if(!steps.length)stepList.textContent='Inga steg registrerade.';const chart=$('weightChart');chart.replaceChildren();if(weights.length){const values=weights.map(w=>num(w.value)),lo=Math.min(...values)-.4,hi=Math.max(...values)+.4,points=values.map((v,i)=>`${15+(i/Math.max(1,values.length-1))*290},${125-(v-lo)/(hi-lo)*105}`).join(' '),line=document.createElementNS('http://www.w3.org/2000/svg','polyline');line.setAttribute('points',points);line.setAttribute('fill','none');line.setAttribute('stroke','#26654f');line.setAttribute('stroke-width','3');line.setAttribute('stroke-linecap','round');chart.append(line)}else chart.textContent='Ingen vikthistorik';$('profileName').value=data.profile.name||'';$('goalWeight').value=data.profile.goal||'';$('goalCal').value=data.profile.calories||'';$('goalSteps').value=data.profile.steps||'';window.balans60EnhanceRender?.()}
-init();})();
-</script>
-<script src="./balans-6.0-stegsync.js?v=43" defer></script>
-<script src="./balans-6.0-upplevelse.js?v=43" defer></script>
-<script src="./balans-6.0-mat.js?v=43" defer></script>
-<script src="./balans-6.0-snabbvy.js?v=43" defer></script>
-<script src="./balans-6.0-foto.js?v=43" defer></script>
-<script src="./balans-6.0-naring.js?v=43" defer></script>
-<script src="./balans-6.0-renstartsida.js?v=44" defer></script>
-<script src="./balans-6.0-maltid45.js?v=45" defer></script>
-<script src="./balans-6.0-stegvy49.js?v=49" defer></script>
-<script src="./balans-6.0-livsmedel50.js?v=50" defer></script>
-<script src="./balans-6.1-halsa.js?v=61" defer></script>
-</body></html>
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #ffffff !important;
+      color: #173e33 !important;
+      font-family: -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      padding: max(50px, env(safe-area-inset-top)) 20px
+               max(30px, env(safe-area-inset-bottom));
+    }
+
+    main {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: #173e33;
+      color: white;
+      padding: 28px 22px;
+      border-radius: 22px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin: 0 0 8px;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin: 0 0 12px;
+    }
+
+    p {
+      line-height: 1.5;
+    }
+
+    .card {
+      background: #f0f5f0;
+      border: 1px solid #dbe5dc;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .success {
+      color: #17623f;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    button {
+      background: #26654f;
+      color: white;
+      border: 0;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: bold;
+      width: 100%;
+    }
+
+    #result {
+      overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <header>
+      <h1>Balans 6.1</h1>
+      <p>TestFlight – diagnostik</p>
+    </header>
+
+    <section class="card">
+      <h2>Test 1 – HTML</h2>
+      <p class="success">
+        HTML har laddats!
+      </p>
+      <p>
+        Om du ser denna text fungerar visningen
+        av appens HTML-sida.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Test 2 – JavaScript</h2>
+      <p id="js-status">
+        Väntar på JavaScript...
+      </p>
+      <button type="button" id="test-button">
+        Testa JavaScript
+      </button>
+    </section>
+
+    <section class="card">
+      <h2>Test 3 – Capacitor</h2>
+      <p id="capacitor-status">
+        Kontrollerar...
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Diagnostik</h2>
+      <p id="result">
+        Ingen testknapp tryckt.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var jsStatus =
+        document.getElementById("js-status");
+
+      var capacitorStatus =
+        document.getElementById("capacitor-status");
+
+      var result =
+        document.getElementById("result");
+
+      jsStatus.textContent =
+        "JavaScript har startat!";
+
+      capacitorStatus.textContent =
+        window.Capacitor
+          ? "Capacitor finns tillgängligt."
+          : "Capacitor hittades inte i webbsidan.";
+
+      document.getElementById("test-button")
+        .addEventListener("click", function () {
+          result.textContent =
+            "Knappen fungerar! " +
+            new Date().toLocaleString("sv-SE");
+        });
+    })();
+  </script>
+</body>
+</html>
