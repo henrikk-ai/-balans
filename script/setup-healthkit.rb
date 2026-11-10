@@ -8,7 +8,7 @@ abort 'App target not found' unless target
 folder = project.main_group.find_subpath('App', true)
 %w[BalansHealthPlugin.swift BalansBridgeViewController.swift].each do |name|
   path = "ios/App/App/#{name}"
-  FileUtils.cp("native/#{name}", path)
+  FileUtils.cp("ios-native/#{name}", path)
   ref = folder.files.find { |f| f.path == name } || folder.new_file(name)
   target.add_file_references([ref]) unless target.source_build_phase.files_references.include?(ref)
 end
