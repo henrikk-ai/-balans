@@ -30,7 +30,22 @@ jobs:
 
       - name: Installera HealthKit
         run: ruby script/setup-healthkit.rb
+        
+      - name: Ange HealthKit-behorigheter
+        shell: bash
+        run: |
+          set -euo pipefail
 
+          PLIST="ios/App/App/Info.plist"
+
+          /usr/libexec/PlistBuddy \
+            -c "Add :NSHealthShareUsageDescription string Balans laser dina steg och vikt fran Apple Halsa for att visa din utveckling." \
+            "$PLIST" || true
+
+          /usr/libexec/PlistBuddy \
+            -c "Add :NSHealthUpdateUsageDescription string Balans behover ditt tillstand for att kunna spara halsouppgifter i Apple Halsa." \
+            "$PLIST" || true
+            
       - name: Bygg for simulator
         shell: bash
         run: |
