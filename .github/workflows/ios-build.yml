@@ -37,7 +37,24 @@ jobs:
         run: |
           npx cap add ios
           npx cap sync ios
+          
+      - name: Kontrollera appens webbfiler
+        shell: bash
+        run: |
+          set -euo pipefail
 
+          echo "Filer i www:"
+          ls -la www/
+
+          echo "Kontrollerar index.html:"
+          test -s www/index.html
+
+          echo "Kontrollerar kopierade iOS-filer:"
+          test -s ios/App/App/public/index.html
+          test -s ios/App/App/public/balans-6.1-halsa.js
+
+          echo "Webbfilerna finns i iOS-projektet."
+          
       - name: Installera HealthKit
         run: ruby script/setup-healthkit.rb
         
