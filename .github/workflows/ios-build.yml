@@ -32,12 +32,15 @@ jobs:
         run: ruby script/setup-healthkit.rb
 
       - name: Bygg for simulator
+        shell: bash
         run: |
+          set -euo pipefail
+
           xcodebuild \
             -workspace ios/App/App.xcworkspace \
             -scheme App \
             -configuration Debug \
-            -sdk simulator \
+            -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
             build
