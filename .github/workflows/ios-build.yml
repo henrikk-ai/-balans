@@ -29,7 +29,7 @@ jobs:
           npx cap sync ios
 
       - name: Installera HealthKit
-        run: ruby scripts/setup-healthkit.rb
+        run: ruby script/setup-healthkit.rb
 
       - name: Bygg iOS-appen
         run: |
