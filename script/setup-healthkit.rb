@@ -24,7 +24,7 @@ end
 storyboard = 'ios/App/App/Base.lproj/Main.storyboard'
 if File.exist?(storyboard)
   text = File.read(storyboard)
-  text = text.gsub('customClass="CAPBridgeViewController"', 'customClass="BalansBridgeViewController" customModule="App" customModuleProvider="target"')
+  text = text.gsub('customClass="CAPBridgeViewController"', 'customClass="BalansBridgeViewController"')
   File.write(storyboard, text)
 else
   abort 'Main.storyboard missing; cannot register native bridge'
