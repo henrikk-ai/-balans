@@ -73,10 +73,11 @@ jobs:
           STORYBOARD="ios/App/App/Base.lproj/Main.storyboard"
           check_file "$STORYBOARD"
 
-          if grep -q 'customClass="BalansBridgeViewController"' "$STORYBOARD"; then
+          if grep -Eq 'customClass=["'"'"']BalansBridgeViewController["'"'"']' "$STORYBOARD"; then
           echo "OK: BalansBridgeViewController används"
           else
           echo "::error::BalansBridgeViewController saknas i storyboard"
+          grep -n 'customClass' "$STORYBOARD" || true
           exit 1
           fi
 
