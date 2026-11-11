@@ -47,8 +47,13 @@ plist_path = 'ios/App/App/Info.plist'
 plist = Plist.parse_xml(plist_path)
 
 plist['NSHealthShareUsageDescription'] =
-
   'Balans läser dina steg och vikt från Apple Hälsa.'
+
+plist['NSCameraUsageDescription'] =
+  'Balans använder kameran för att fotografera måltider.'
+
+plist['NSPhotoLibraryUsageDescription'] =
+  'Balans använder bilder för att analysera måltider.'
 
 File.write(plist_path, plist.to_plist)
 
