@@ -22,6 +22,7 @@ jobs:
           xcode-select -p
           xcodebuild -version
           xcodebuild -showsdks
+
       - name: Hamta projektet
         uses: actions/checkout@v4
 
@@ -37,62 +38,54 @@ jobs:
         run: |
           npx cap add ios
           npx cap sync ios
-          
+
       - name: Kontrollera appens webbfiler
         shell: bash
         run: |
           set -euo pipefail
-
-          echo "Filer i www:"
-          ls -la www/
-
-          echo "Kontrollerar index.html:"
+          ls -la www
           test -s www/index.html
-
-          echo "Kontrollerar kopierade iOS-filer:"
+          test -s www/balans-6.1-halsa.js
           test -s ios/App/App/public/index.html
           test -s ios/App/App/public/balans-6.1-halsa.js
-
           echo "Webbfilerna finns i iOS-projektet."
-          
+
       - name: Installera HealthKit
         run: ruby script/setup-healthkit.rb
-        
+
       - name: Kontrollera HealthKit-installation
-       shell: bash
-       run: |
-         set -euo pipefail
-         test -f ios/App/App/BalansHealthPlugin.swift
-         test -f ios/App/App/BalansBridgeViewController.swift
-         test -f ios/App/App/App.entitlements
+        shell: bash
+        run: |
+          set -euo pipefail
 
-         grep -q 'BalansBridgeViewController' \
-           ios/App/App/Base.lproj/Main.storyboard
+          test -f ios/App/App/BalansHealthPlugin.swift
+          test -f ios/App/App/BalansBridgeViewController.swift
+          test -f ios/App/App/App.entitlements
 
-         grep -q 'registerPluginInstance' \
-           ios/App/App/BalansBridgeViewController.swift
+          grep -q 'BalansBridgeViewController' \
+            ios/App/App/Base.lproj/Main.storyboard
 
-         echo "HealthKit-filer och storyboard kontrollerade."
+          grep -q 'registerPluginInstance' \
+            ios/App/App/BalansBridgeViewController.swift
+
+          echo "HealthKit-filer och storyboard kontrollerade."
+
       - name: Ange HealthKit-behorigheter
         shell: bash
         run: |
           set -euo pipefail
-
           PLIST="ios/App/App/Info.plist"
-
           /usr/libexec/PlistBuddy \
             -c "Add :NSHealthShareUsageDescription string Balans laser dina steg och vikt fran Apple Halsa for att visa din utveckling." \
             "$PLIST" || true
-
           /usr/libexec/PlistBuddy \
             -c "Add :NSHealthUpdateUsageDescription string Balans behover ditt tillstand for att kunna spara halsouppgifter i Apple Halsa." \
             "$PLIST" || true
-            
+
       - name: Bygg for simulator
         shell: bash
         run: |
           set -euo pipefail
-
           xcodebuild \
             -workspace ios/App/App.xcworkspace \
             -scheme App \
@@ -112,12 +105,9 @@ jobs:
           set -euo pipefail
           KEYCHAIN="$RUNNER_TEMP/balans.keychain-db"
           KEYCHAIN_PASSWORD="$(openssl rand -hex 24)"
-
           echo "KEYCHAIN=$KEYCHAIN" >> "$GITHUB_ENV"
-
           printf '%s' "$CERT_B64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
           printf '%s' "$PROFILE_B64" | base64 --decode > "$RUNNER_TEMP/profile.mobileprovision"
-
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
           security set-keychain-settings -lut 21600 "$KEYCHAIN"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
@@ -125,30 +115,23 @@ jobs:
             -k "$KEYCHAIN" \
             -P "$CERT_PASSWORD" \
             -T /usr/bin/codesign
-
           security list-keychains -d user -s "$KEYCHAIN"
           security set-key-partition-list \
             -S apple-tool:,apple:,codesign: \
             -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
-
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
-
           security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" \
             > "$RUNNER_TEMP/profile.plist"
-
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print UUID' "$RUNNER_TEMP/profile.plist")
           PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print Name' "$RUNNER_TEMP/profile.plist")
           TEAM_ID=$(/usr/libexec/PlistBuddy -c 'Print TeamIdentifier:0' "$RUNNER_TEMP/profile.plist")
           APP_ID=$(/usr/libexec/PlistBuddy -c 'Print Entitlements:application-identifier' "$RUNNER_TEMP/profile.plist")
           BUNDLE_ID="${APP_ID#${TEAM_ID}.}"
-
           cp "$RUNNER_TEMP/profile.mobileprovision" \
             "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
-
           echo "TEAM_ID=$TEAM_ID" >> "$GITHUB_ENV"
           echo "BUNDLE_ID=$BUNDLE_ID" >> "$GITHUB_ENV"
           echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
-
           echo "Bundle ID: $BUNDLE_ID"
           echo "Provisioning profile installerad"
 
@@ -156,12 +139,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           /usr/libexec/PlistBuddy \
             -c "Set :CFBundleIdentifier $BUNDLE_ID" \
             ios/App/App/Info.plist 2>/dev/null || true
-
-          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF_OPTIONS
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
@@ -183,23 +164,18 @@ jobs:
             </dict>
           </dict>
           </plist>
-          EOF
+          EOF_OPTIONS
 
       - name: Skapa iPhone-arkiv
         shell: bash
         run: |
           set -euo pipefail
-
-          # Ange signering enbart for App-targetet
           ruby <<'RUBY'
           require 'xcodeproj'
-
           project_path = 'ios/App/App.xcodeproj'
           project = Xcodeproj::Project.open(project_path)
-
           target = project.targets.find { |t| t.name == 'App' }
           abort 'App-targetet hittades inte' unless target
-
           target.build_configurations.each do |config|
             config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
             config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'
@@ -207,10 +183,8 @@ jobs:
             config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = ENV.fetch('BUNDLE_ID')
             config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ENV.fetch('PROFILE_NAME')
           end
-
           project.save
           RUBY
-
           xcodebuild \
             -workspace ios/App/App.xcworkspace \
             -scheme App \
@@ -228,7 +202,6 @@ jobs:
             -archivePath "$RUNNER_TEMP/Balans.xcarchive" \
             -exportPath "$RUNNER_TEMP/export" \
             -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
-
           find "$RUNNER_TEMP/export" -name '*.ipa'
 
       - name: Spara IPA som artefakt
@@ -258,7 +231,6 @@ jobs:
           set -euo pipefail
           IPA=$(find "$RUNNER_TEMP/export" -name '*.ipa' -print -quit)
           test -n "$IPA"
-
           xcrun altool --upload-app \
             -f "$IPA" \
             -t ios \
