@@ -10,30 +10,28 @@ abort 'App target not found' unless target
 
 folder = project.main_group.find_subpath('App', true)
 
-%w[BalansHealthPlugin.swift BalansBridgeViewController.swift].each do |name|
-  source = "ios-native/#{name}"
-  destination = "ios/App/App/#{name}"
+# Kopiera endast HealthKit-pluginen.
+name = 'BalansHealthPlugin.swift'
+source = "ios-native/#{name}"
+destination = "ios/App/App/#{name}"
 
-  abort "Missing file: #{source}" unless File.exist?(source)
+abort "Missing file: #{source}" unless File.exist?(source)
 
-  FileUtils.cp(source, destination)
+FileUtils.cp(source, destination)
 
-  ref = folder.files.find { |f| f.path == name } ||
-        folder.new_file(name)
+ref = folder.files.find { |f| f.path == name } ||
+      folder.new_file(name)
 
-  unless target.source_build_phase.files_references.include?(ref)
-    target.add_file_references([ref])
-  end
+unless target.source_build_phase.files_references.include?(ref)
+  target.add_file_references([ref])
 end
 
+# HealthKit-behorigheter.
 plist_path = 'ios/App/App/Info.plist'
 plist = Plist.parse_xml(plist_path)
 
 plist['NSHealthShareUsageDescription'] =
   'Balans läser dina steg och vikt från Apple Hälsa.'
-
-plist['NSHealthUpdateUsageDescription'] =
-  'Balans behöver tillstånd för att spara hälsouppgifter.'
 
 File.write(plist_path, plist.to_plist)
 
@@ -49,25 +47,24 @@ target.build_configurations.each do |config|
     'App/App.entitlements'
 end
 
-# DIAGNOSTIK: Anvand Capacitors standardcontroller.
-storyboard = 'ios/App/App/Base.lproj/Main.storyboard'
+# Registrera pluginen i Capacitors standardcontroller.
+app_delegate = 'ios/App/App/AppDelegate.swift'
+abort 'AppDelegate.swift saknas' unless File.exist?(app_delegate)
 
-abort 'Main.storyboard saknas' unless File.exist?(storyboard)
+swift = File.read(app_delegate)
 
-text = File.read(storyboard)
+unless swift.include?('registerPlugin(BalansHealthPlugin.self)')
+  swift = swift.sub(
+    /(\bfunc application\()/,
+    "override func capacitorDidLoad() {\n" \
+    "    super.capacitorDidLoad()\n" \
+    "    bridge?.registerPluginInstance(BalansHealthPlugin())\n" \
+    "}\n\n\\1"
+  )
+end
 
-# Aterstall enbart den controller som tidigare
-# andrats till BalansBridgeViewController.
-text = text.gsub(
-  'customClass="BalansBridgeViewController"',
-  'customClass="CAPBridgeViewController"'
-)
-
-File.write(storyboard, text)
-
-puts 'DIAGNOSTIK: Capacitors standardcontroller aktiverad.'
+File.write(app_delegate, swift)
 
 project.save
 
-puts 'DIAGNOSTIK: Capacitors standardvy används.'
-puts 'HealthKit-filer finns kvar men pluginen registreras inte.'
+puts 'HealthKit konfigurerat.'
