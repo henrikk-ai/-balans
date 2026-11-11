@@ -49,35 +49,23 @@ target.build_configurations.each do |config|
     'App/App.entitlements'
 end
 
-# DIAGNOSTIK:
-# Använd Capacitors standardvy utan den anpassade bryggan.
+# DIAGNOSTIK: Anvand Capacitors standardcontroller.
 storyboard = 'ios/App/App/Base.lproj/Main.storyboard'
 
-if File.exist?(storyboard)
-  text = File.read(storyboard)
+abort 'Main.storyboard saknas' unless File.exist?(storyboard)
 
-  # Ersatt eventuell befintlig controllerklass.
-  text = text.gsub(
-    /customClass="[^"]*"/,
-    'customClass="BalansBridgeViewController"'
-  )
+text = File.read(storyboard)
 
-  # Om storyboard saknar customClass, lagg till den
-  # enbart pa den ursprungliga CAPBridgeViewController.
-  unless text.include?('customClass="BalansBridgeViewController"')
-    text = text.sub(
-      /(<viewController\b)([^>]*)(>)/,
-      '\1\2 customClass="BalansBridgeViewController"\3'
-    )
-  end
+# Aterstall enbart den controller som tidigare
+# andrats till BalansBridgeViewController.
+text = text.gsub(
+  'customClass="BalansBridgeViewController"',
+  'customClass="CAPBridgeViewController"'
+)
 
-  File.write(storyboard, text)
+File.write(storyboard, text)
 
-  abort 'Kunde inte konfigurera storyboard' unless
-    text.include?('customClass="BalansBridgeViewController"')
-else
-  abort 'Main.storyboard saknas'
-end
+puts 'DIAGNOSTIK: Capacitors standardcontroller aktiverad.'
 
 project.save
 
