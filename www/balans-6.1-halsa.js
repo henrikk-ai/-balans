@@ -3,7 +3,25 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const native = () => window.Capacitor?.isNativePlatform?.() && window.Capacitor?.getPlatform?.() === 'ios';
-  const health = () => window.Capacitor?.registerPlugin?.('BalansHealth');
+const health = () => {
+  const cap = window.Capacitor;
+
+  if (!cap) {
+    throw new Error('Capacitor saknas.');
+  }
+
+  if (!cap.isNativePlatform?.()) {
+    throw new Error('Appen körs inte som en native-app.');
+  }
+
+  const api = cap.registerPlugin?.('BalansHealth');
+
+  if (!api) {
+    throw new Error('BalansHealth kunde inte registreras.');
+  }
+
+  return api;
+};
   function status(message) { if ($('b61-health-status')) $('b61-health-status').textContent = message; }
   function render(data) {
     const steps = data?.days || [];
