@@ -28,8 +28,8 @@ const health = () => {
     const today = new Date();
     const key = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
     const count = steps.find(d => d.date === key)?.count ?? 0;
-    $('b61-health-today').textContent = count.toLocaleString('sv-SE') + ' steg';
-    $('b61-health-history').textContent = 'Senaste ' + steps.length + ' dagar: ' + steps.reduce((sum, d) => sum + (Number(d.count)||0), 0).toLocaleString('sv-SE') + ' steg totalt.';
+    $('b61--today').textContent = count.toLocaleString('sv-SE') + ' steg';
+    $('b61--history').textContent = 'Senaste ' + steps.length + ' dagar: ' + steps.reduce((sum, d) => sum + (Number(d.count)||0), 0).toLocaleString('sv-SE') + ' steg totalt.';
   }
   async function sync() {
     try {
