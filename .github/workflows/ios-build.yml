@@ -58,17 +58,38 @@ jobs:
         run: |
           set -euo pipefail
 
-          test -f ios/App/App/BalansHealthPlugin.swift
-          test -f ios/App/App/BalansBridgeViewController.swift
-          test -f ios/App/App/App.entitlements
+          check_file() {
+            if [ -f "$1" ]; then
+              echo "OK: $1"
+            else
+              echo "::error::Filen saknas: $1"
+              exit 1
+            fi
+          }
 
-          grep -q 'BalansBridgeViewController' \
-            ios/App/App/Base.lproj/Main.storyboard
+          check_file ios/App/App/BalansHealthPlugin.swift
+          check_file ios/App/App/BalansBridgeViewController.swift
+          check_file ios/App/App/App.entitlements
 
-          grep -q 'registerPluginInstance' \
-            ios/App/App/BalansBridgeViewController.swift
+          STORYBOARD="ios/App/App/Base.lproj/Main.storyboard"
+          check_file "$STORYBOARD"
 
-          echo "HealthKit-filer och storyboard kontrollerade."
+          if grep -q 'BalansBridgeViewController' "$STORYBOARD"; then
+            echo "OK: Rätt startkontroller i storyboard"
+          else
+            echo "::error::BalansBridgeViewController saknas i storyboard"
+            exit 1
+          fi
+
+          if grep -q 'registerPluginInstance' \
+            ios/App/App/BalansBridgeViewController.swift; then
+            echo "OK: Pluginregistrering finns"
+          else
+            echo "::error::Pluginregistrering saknas"
+            exit 1
+          fi
+
+          echo "Alla HealthKit-kontroller godkända!"
 
       - name: Ange HealthKit-behorigheter
         shell: bash
