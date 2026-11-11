@@ -58,6 +58,21 @@ jobs:
       - name: Installera HealthKit
         run: ruby script/setup-healthkit.rb
         
+      - name: Kontrollera HealthKit-installation
+       shell: bash
+       run: |
+         set -euo pipefail
+         test -f ios/App/App/BalansHealthPlugin.swift
+         test -f ios/App/App/BalansBridgeViewController.swift
+         test -f ios/App/App/App.entitlements
+
+         grep -q 'BalansBridgeViewController' \
+           ios/App/App/Base.lproj/Main.storyboard
+
+         grep -q 'registerPluginInstance' \
+           ios/App/App/BalansBridgeViewController.swift
+
+         echo "HealthKit-filer och storyboard kontrollerade."
       - name: Ange HealthKit-behorigheter
         shell: bash
         run: |
