@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'xcodeproj'
 require 'plist'
+require 'rexml/document'
 
 project_path = 'ios/App/App.xcodeproj'
 project = Xcodeproj::Project.open(project_path)
@@ -10,61 +11,31 @@ abort 'App target not found' unless target
 
 folder = project.main_group.find_subpath('App', true)
 
-# Kopiera endast HealthKit-pluginen.
-name = 'BalansHealthPlugin.swift'
-source = "ios-native/#{name}"
-destination = "ios/App/App/#{name}"
+# Kopiera plugin och egen bryggcontroller.
+%w[BalansHealthPlugin.swift BalansBridgeViewController.swift].each do |name|
+# Registrera pluginen via en egen CAPBridgeViewController.
+# AppDelegate ska INTE modifieras.
+storyboard = 'ios/App/App/Base.lproj/Main.storyboard'
+abort 'Main.storyboard saknas' unless File.exist?(storyboard)
 
-abort "Missing file: #{source}" unless File.exist?(source)
+xml = REXML::Document.new(File.read(storyboard))
 
-FileUtils.cp(source, destination)
-
-ref = folder.files.find { |f| f.path == name } ||
-      folder.new_file(name)
-
-unless target.source_build_phase.files_references.include?(ref)
-  target.add_file_references([ref])
+controller = nil
+REXML::XPath.each(xml, '//viewController') do |element|
+  if ['CAPBridgeViewController', 'BalansBridgeViewController'].include?(element.attributes['customClass'])
+    controller = element
+    break
+  end
 end
 
-# HealthKit-behorigheter.
-plist_path = 'ios/App/App/Info.plist'
-plist = Plist.parse_xml(plist_path)
+abort 'Capacitors viewController hittades inte' unless controller
 
-plist['NSHealthShareUsageDescription'] =
-  'Balans läser dina steg och vikt från Apple Hälsa.'
+controller.attributes['customClass'] = 'BalansBridgeViewController'
+controller.attributes['customModule'] = 'App'
 
-File.write(plist_path, plist.to_plist)
-
-entitlements_path = 'ios/App/App/App.entitlements'
-
-File.write(
-  entitlements_path,
-  { 'com.apple.developer.healthkit' => true }.to_plist
-)
-
-target.build_configurations.each do |config|
-  config.build_settings['CODE_SIGN_ENTITLEMENTS'] =
-    'App/App.entitlements'
-end
-
-# Registrera pluginen i Capacitors standardcontroller.
-app_delegate = 'ios/App/App/AppDelegate.swift'
-abort 'AppDelegate.swift saknas' unless File.exist?(app_delegate)
-
-swift = File.read(app_delegate)
-
-unless swift.include?('registerPlugin(BalansHealthPlugin.self)')
-  swift = swift.sub(
-    /(\bfunc application\()/,
-    "override func capacitorDidLoad() {\n" \
-    "    super.capacitorDidLoad()\n" \
-    "    bridge?.registerPluginInstance(BalansHealthPlugin())\n" \
-    "}\n\n\\1"
-  )
-end
-
-File.write(app_delegate, swift)
+File.write(storyboard, xml.to_s)
 
 project.save
 
-puts 'HealthKit konfigurerat.'
+puts 'HealthKit och BalansBridgeViewController konfigurerade.'
+puts 'AppDelegate.swift har inte ändrats.'
