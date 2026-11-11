@@ -53,19 +53,31 @@ end
 # Använd Capacitors standardvy utan den anpassade bryggan.
 storyboard = 'ios/App/App/Base.lproj/Main.storyboard'
 
-abort 'Main.storyboard missing' unless File.exist?(storyboard)
+if File.exist?(storyboard)
+  text = File.read(storyboard)
 
-text = File.read(storyboard)
+  # Ersatt eventuell befintlig controllerklass.
+  text = text.gsub(
+    /customClass="[^"]*"/,
+    'customClass="BalansBridgeViewController"'
+  )
 
-text = text.gsub(
-  'customClass="BalansBridgeViewController"',
-  'customClass="CAPBridgeViewController"'
-)
+  # Om storyboard saknar customClass, lagg till den
+  # enbart pa den ursprungliga CAPBridgeViewController.
+  unless text.include?('customClass="BalansBridgeViewController"')
+    text = text.sub(
+      /(<viewController\b)([^>]*)(>)/,
+      '\1\2 customClass="BalansBridgeViewController"\3'
+    )
+  end
 
-abort 'CAPBridgeViewController not found in storyboard' unless
-  text.include?('customClass="CAPBridgeViewController"')
+  File.write(storyboard, text)
 
-File.write(storyboard, text)
+  abort 'Kunde inte konfigurera storyboard' unless
+    text.include?('customClass="BalansBridgeViewController"')
+else
+  abort 'Main.storyboard saknas'
+end
 
 project.save
 
