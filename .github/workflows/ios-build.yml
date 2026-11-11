@@ -74,11 +74,11 @@ jobs:
           STORYBOARD="ios/App/App/Base.lproj/Main.storyboard"
           check_file "$STORYBOARD"
 
-          if grep -q 'BalansBridgeViewController' "$STORYBOARD"; then
-            echo "OK: Rätt startkontroller i storyboard"
+          if grep -q 'customClass="CAPBridgeViewController"' "$STORYBOARD"; then
+          echo "OK: Capacitors standardcontroller används"
           else
-            echo "::error::BalansBridgeViewController saknas i storyboard"
-            exit 1
+          echo "::error::CAPBridgeViewController saknas i storyboard"
+          exit 1
           fi
 
           if grep -q 'registerPluginInstance' \
