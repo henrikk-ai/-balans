@@ -2,11 +2,11 @@
 /*
  * Balans 6.1 – Apple Hälsa / HealthKit
  *
- * Läser steg och vikt från Apple Hälsa.
- * Skriver inte till Apple Hälsa.
- * Ändrar inte befintliga måltider, vikter eller steg.
- *
- * Diagnostik för Capacitor 7.
+ * Automatisk synk vid start och när appen återupptas.
+ * Hämtar 30 dagars steg från Apple Hälsa.
+ * Bevarar manuellt registrerade steg.
+ * Ändrar inte måltider eller viktregistreringar.
+ * Skriver aldrig till Apple Hälsa.
  */
 
 (function () {
@@ -14,68 +14,60 @@
 
   const $ = id => document.getElementById(id);
 
+  const DATA_KEY = 'balans60_beta_personal_v1';
+  const SOURCE_KEY = 'balans61_health_step_sources_v1';
+
+  let syncing = false;
+  let authorized = false;
+  let lastSync = 0;
+
   function native() {
     const cap = window.Capacitor;
-
     return Boolean(
       cap?.isNativePlatform?.() &&
       cap?.getPlatform?.() === 'ios'
     );
   }
 
-  // Hämta den inbyggda HealthKit-pluginen.
   function health() {
     const cap = window.Capacitor;
 
-    if (!cap) {
-      throw new Error('Capacitor saknas.');
-    }
-
-    if (!cap.isNativePlatform?.()) {
-      throw new Error(
-        'Balans körs inte som en native-app.'
-      );
+    if (!cap || !native()) {
+      throw new Error('Capacitor iOS saknas.');
     }
 
     const api = cap.Plugins?.BalansHealth;
 
     if (!api) {
-      throw new Error(
-        'BalansHealth finns inte bland Capacitors registrerade plugins.'
-      );
+      throw new Error('BalansHealth saknas.');
     }
 
     return api;
   }
 
-  // Visa statusmeddelanden.
   function status(message) {
     const element = $('b61-health-status');
-
-    if (element) {
-      element.textContent = message;
-    }
+    if (element) element.textContent = message;
   }
 
-  // Visa steg från Apple Hälsa.
-  function render(data) {
-    const steps = Array.isArray(data?.days)
-      ? data.days
+  function dateKey(date = new Date()) {
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0')
+    ].join('-');
+  }
+
+  function displaySteps(result) {
+    const days = Array.isArray(result?.days)
+      ? result.days
       : [];
 
-    const today = new Date();
-
-    const key = [
-      today.getFullYear(),
-      String(today.getMonth() + 1).padStart(2, '0'),
-      String(today.getDate()).padStart(2, '0')
-    ].join('-');
-
-    const todayData = steps.find(
-      day => day.date === key
+    const today = days.find(
+      day => day.date === dateKey()
     );
 
-    const count = Number(todayData?.count ?? 0);
+    const count = Number(today?.count ?? 0);
 
     const todayElement = $('b61-health-today');
 
@@ -84,135 +76,216 @@
         count.toLocaleString('sv-SE') + ' steg';
     }
 
-    const historyElement = $('b61-health-history');
+    const total = days.reduce(
+      (sum, day) => sum + (Number(day.count) || 0),
+      0
+    );
 
-    if (historyElement) {
-      const total = steps.reduce(
-        (sum, day) =>
-          sum + (Number(day.count) || 0),
-        0
-      );
+    const history = $('b61-health-history');
 
-      historyElement.textContent =
-        'Senaste ' +
-        steps.length +
-        ' dagar: ' +
+    if (history) {
+      history.textContent =
+        'Senaste ' + days.length + ' dagar: ' +
         total.toLocaleString('sv-SE') +
         ' steg totalt.';
     }
   }
 
-  // Begär åtkomst och läs steg.
-  async function sync() {
+  function getSources() {
     try {
-      status(
-        'Kontrollerar anslutningen till Apple Hälsa …'
+      const value = JSON.parse(
+        localStorage.getItem(SOURCE_KEY) || '{}'
+      );
+      return value && typeof value === 'object'
+        ? value
+        : {};
+    } catch {
+      return {};
+    }
+  }
+
+  /*
+   * Importera endast dagar som är tomma eller
+   * som tidigare importerats av denna integration.
+   *
+   * Befintliga manuella steg bevaras.
+   */
+  function importSteps(result) {
+    const days = Array.isArray(result?.days)
+      ? result.days
+      : [];
+
+    if (!days.length) {
+      return 0;
+    }
+
+    const raw = localStorage.getItem(DATA_KEY);
+
+    if (!raw) {
+      throw new Error(
+        'Balans lokala data är ännu inte laddade.'
+      );
+    }
+
+    const data = JSON.parse(raw);
+
+    if (!data || !Array.isArray(data.meals) ||
+        !Array.isArray(data.weights)) {
+      throw new Error('Ogiltigt dataformat i Balans.');
+    }
+
+    const steps = data.steps || {};
+    const sources = getSources();
+    const updates = {};
+    let changed = 0;
+
+    for (const day of days) {
+      if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(day.date) ||
+        !Number.isFinite(Number(day.count))
+      ) {
+        continue;
+      }
+
+      const count = Math.max(
+        0,
+        Math.round(Number(day.count))
       );
 
+      const existing = steps[day.date];
+      const hasExisting =
+        Object.prototype.hasOwnProperty.call(
+          steps,
+          day.date
+        );
+
+      // Bara dagar utan värde, eller tidigare
+      // HealthKit-importer, får uppdateras.
+      if (hasExisting && sources[day.date] !== 'healthkit') {
+        continue;
+      }
+
+      // Om värdet ändrats utanför HealthKit-integrationen
+      // ska vi inte skriva över det.
+      if (
+        hasExisting &&
+        sources[day.date] === 'healthkit' &&
+        existing?.source !== 'healthkit'
+      ) {
+        continue;
+      }
+
+      updates[day.date] = {
+        count,
+        source: 'healthkit'
+      };
+
+      sources[day.date] = 'healthkit';
+      changed++;
+    }
+
+    if (!changed) return 0;
+
+    /*
+     * Använd Balans befintliga uppdateringsfunktion.
+     * Den uppdaterar även appens interna tillstånd
+     * och ritar om startsida och stegsida.
+     */
+    if (
+      typeof window.balans60UpdateSteps !== 'function'
+    ) {
+      throw new Error(
+        'Balans stegfunktion saknas.'
+      );
+    }
+
+    window.balans60UpdateSteps(updates, raw);
+
+    localStorage.setItem(
+      SOURCE_KEY,
+      JSON.stringify(sources)
+    );
+
+    return changed;
+  }
+
+  async function sync(force = false) {
+    if (!native() || syncing) return;
+
+    // Undvik dubbla anrop vid snabb växling.
+    if (!force && Date.now() - lastSync < 60000) {
+      return;
+    }
+
+    syncing = true;
+
+    try {
       const api = health();
 
-      if (typeof api.requestAccess !== 'function') {
-        throw new Error(
-          'Metoden requestAccess saknas i BalansHealth.'
-        );
+      if (!authorized) {
+        status('Ansluter till Apple Hälsa …');
+        await api.requestAccess();
+        authorized = true;
       }
 
-      if (typeof api.readSteps !== 'function') {
-        throw new Error(
-          'Metoden readSteps saknas i BalansHealth.'
-        );
-      }
-
-      status('Begär åtkomst till Apple Hälsa …');
-
-      await api.requestAccess();
-
-      status('Läser steg från Apple Hälsa …');
+      status('Uppdaterar steg från Apple Hälsa …');
 
       const result = await api.readSteps({
         days: 30
       });
 
-      render(result);
+      displaySteps(result);
+
+      const imported = importSteps(result);
+
+      lastSync = Date.now();
 
       status(
-        'Steg hämtade från Apple Hälsa. ' +
-        'Uppgifterna visas endast här och ' +
-        'sparas inte automatiskt i Balans.'
+        'Synkroniserat med Apple Hälsa. ' +
+        imported + ' dagar uppdaterade.'
       );
 
     } catch (error) {
-      console.error(
-        'BALANS HealthKit steg:',
-        error
-      );
+      console.error('Balans HealthKit:', error);
 
       status(
-        'Kunde inte läsa Hälsa: ' +
+        'Kunde inte synkronisera: ' +
         (error?.message || String(error))
       );
+    } finally {
+      syncing = false;
     }
   }
 
-  // Begär åtkomst och läs vikt.
   async function weights() {
     try {
-      status(
-        'Kontrollerar anslutningen till Apple Hälsa …'
-      );
-
       const api = health();
 
-      if (typeof api.requestAccess !== 'function') {
-        throw new Error(
-          'Metoden requestAccess saknas i BalansHealth.'
-        );
+      if (!authorized) {
+        await api.requestAccess();
+        authorized = true;
       }
-
-      if (typeof api.readWeights !== 'function') {
-        throw new Error(
-          'Metoden readWeights saknas i BalansHealth.'
-        );
-      }
-
-      status('Begär åtkomst till Apple Hälsa …');
-
-      await api.requestAccess();
-
-      status('Läser vikt från Apple Hälsa …');
 
       const result = await api.readWeights();
-
       const latest = result?.weights?.[0];
 
-      const weightElement = $('b61-health-weight');
+      const element = $('b61-health-weight');
 
-      if (weightElement) {
-        if (latest) {
-          const value = Number(latest.value);
-
-          weightElement.textContent =
-            value.toFixed(1).replace('.', ',') +
-            ' kg (' +
-            latest.date +
-            ')';
-        } else {
-          weightElement.textContent =
-            'Inga viktvärden tillgängliga';
-        }
+      if (element) {
+        element.textContent = latest
+          ? Number(latest.value)
+              .toFixed(1)
+              .replace('.', ',') +
+            ' kg (' + latest.date + ')'
+          : 'Inga viktvärden tillgängliga';
       }
 
       status(
         'Vikt hämtad från Apple Hälsa. ' +
-        'Ingen vikt har lagts till automatiskt.'
+        'Ingen vikt har importerats.'
       );
 
     } catch (error) {
-      console.error(
-        'BALANS HealthKit vikt:',
-        error
-      );
-
       status(
         'Kunde inte läsa vikt: ' +
         (error?.message || String(error))
@@ -220,21 +293,12 @@
     }
   }
 
-  // Skapa HealthKit-kortet på stegsidan.
   function init() {
-    const stepsPage = $('steps');
+    const page = $('steps');
 
-    if (!stepsPage) {
-      return;
-    }
-
-    // Förhindra dubbla kort.
-    if ($('b61-health-card')) {
-      return;
-    }
+    if (!page || $('b61-health-card')) return;
 
     const card = document.createElement('div');
-
     card.className = 'card';
     card.id = 'b61-health-card';
 
@@ -243,112 +307,88 @@
         Apple Hälsa · Balans 6.1
       </div>
 
-      <p
-        id="b61-health-status"
-        class="muted"
-        aria-live="polite">
-      </p>
+      <p id="b61-health-status"
+         class="muted"
+         aria-live="polite"></p>
 
-      <div
-        id="b61-health-today"
-        class="big">
-        – steg
-      </div>
+      <div id="b61-health-today"
+           class="big">– steg</div>
 
-      <p
-        id="b61-health-history"
-        class="muted">
-      </p>
+      <p id="b61-health-history"
+         class="muted"></p>
 
-      <p
-        id="b61-health-weight"
-        class="muted">
-      </p>
+      <p id="b61-health-weight"
+         class="muted"></p>
 
       <div class="actions">
-        <button
-          class="btn"
-          id="b61-read-steps"
-          type="button">
-          Läs steg från Hälsa
+        <button class="btn"
+                id="b61-read-steps"
+                type="button">
+          Uppdatera steg
         </button>
 
-        <button
-          class="btn"
-          id="b61-read-weight"
-          type="button">
+        <button class="btn"
+                id="b61-read-weight"
+                type="button">
           Läs vikt
         </button>
       </div>
     `;
 
-    const firstCard =
-      stepsPage.querySelector('.card');
+    const first = page.querySelector('.card');
 
-    if (firstCard) {
-      stepsPage.insertBefore(
-        card,
-        firstCard
-      );
+    if (first) {
+      page.insertBefore(card, first);
     } else {
-      stepsPage.appendChild(card);
+      page.appendChild(card);
     }
 
-    // Apple Hälsa fungerar bara i native iOS.
     if (!native()) {
       status(
-        'Apple Hälsa kan bara användas i ' +
-        'den installerade iPhone-appen.'
+        'Apple Hälsa fungerar endast i iPhone-appen.'
       );
-
       card.querySelectorAll('button').forEach(
-        button => {
-          button.disabled = true;
-        }
+        button => button.disabled = true
       );
-
       return;
     }
 
-    // Diagnostik vid uppstart.
-    const cap = window.Capacitor;
-
-    const available =
-      cap.isPluginAvailable?.('BalansHealth');
-
-    const plugin =
-      cap.Plugins?.BalansHealth;
-
-    if (!plugin) {
-      status(
-        'Diagnostik: BalansHealth saknas i ' +
-        'Capacitors pluginregister.'
-      );
-    } else if (available === false) {
-      status(
-        'Diagnostik: BalansHealth finns i ' +
-        'JavaScript men saknas som native-plugin.'
-      );
-    } else {
-      status(
-        'BalansHealth hittades. ' +
-        'Tryck på Läs steg för att testa anslutningen.'
-      );
-    }
-
-    // Koppla knappar.
     $('b61-read-steps').addEventListener(
       'click',
-      sync
+      () => sync(true)
     );
 
     $('b61-read-weight').addEventListener(
       'click',
       weights
     );
+
+    status('Ansluter automatiskt till Apple Hälsa …');
+
+    // Vänta tills Balans läst in lokala data.
+    window.addEventListener('load', () => {
+      setTimeout(() => sync(true), 1000);
+    }, { once: true });
+
+    // Om sidan redan är helt laddad.
+    if (document.readyState === 'complete') {
+      setTimeout(() => sync(true), 1000);
+    }
+
+    // Synka när appen återvänder till förgrunden.
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (!document.hidden) sync();
+      }
+    );
+
+    window.addEventListener(
+      'pageshow',
+      () => sync()
+    );
   }
 
-  // Starta när sidan är laddad.
   if (document.readyState === 'loading') {
     document.addEventListener(
       'DOMContentLoaded',
