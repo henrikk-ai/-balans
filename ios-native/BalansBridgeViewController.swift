@@ -1,19 +1,15 @@
-import Capacitor
+
 import Foundation
+import Capacitor
 
 class BalansBridgeViewController: CAPBridgeViewController {
 
     override open func capacitorDidLoad() {
         super.capacitorDidLoad()
 
-        NSLog("BALANS: capacitorDidLoad körs")
-
-        guard let bridge = bridge else {
-            NSLog("BALANS ERROR: Capacitor bridge saknas")
-            return
-        }
-
-        bridge.registerPluginInstance(BalansHealthPlugin())
+        bridge?.registerPluginInstance(
+            BalansHealthPlugin()
+        )
 
         NSLog("BALANS: HealthKit-plugin registrerad")
     }
