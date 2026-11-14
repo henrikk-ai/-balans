@@ -3,6 +3,7 @@ import StoreKit
 import Capacitor
 
 @objc(BalansPremiumPlugin)
+@available(iOS 15.0, *).
 public class BalansPremiumPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "BalansPremiumPlugin"
     public let jsName = "BalansPremium"
