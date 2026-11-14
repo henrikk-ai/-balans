@@ -1,1 +1,105 @@
+name: Balans iPad Screenshots
 
+on:
+  workflow_dispatch:
+
+jobs:
+  ipad-screenshots:
+    runs-on: macos-15
+    timeout-minutes: 45
+
+    steps:
+      - name: Hamta projektet
+        uses: actions/checkout@v4
+
+      - name: Valj Xcode 26
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26'
+
+      - name: Installera Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Installera beroenden
+        run: npm install
+
+      - name: Skapa iOS-projekt
+        run: |
+          npx cap add ios
+          npx cap sync ios
+
+      - name: Installera HealthKit
+        run: ruby script/setup-healthkit.rb
+
+      - name: Starta iPad-simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          xcrun simctl list devices available
+
+          DEVICE_ID=$(xcrun simctl list devices available \
+            | grep 'iPad Pro 13-inch' \
+            | head -n 1 \
+            | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+
+          if [ -z "$DEVICE_ID" ]; then
+            echo "Ingen 13-tums iPad-simulator hittades"
+            exit 1
+          fi
+
+          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+
+          xcrun simctl boot "$DEVICE_ID"
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+
+      - name: Bygg appen for simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          xcodebuild \
+            -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,id=$DEVICE_ID" \
+            -derivedDataPath "$RUNNER_TEMP/BalansDerived" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Installera och starta Balans
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          APP_PATH="$RUNNER_TEMP/BalansDerived/Build/Products/Debug-iphonesimulator/App.app"
+
+          test -d "$APP_PATH"
+
+          BUNDLE_ID=$(/usr/libexec/PlistBuddy \
+            -c 'Print CFBundleIdentifier' \
+            "$APP_PATH/Info.plist")
+
+          xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+          xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID"
+
+          sleep 12
+
+      - name: Ta skarmbild
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p screenshots
+
+          xcrun simctl io "$DEVICE_ID" screenshot \
+            screenshots/Balans-iPad-13.png
+
+      - name: Spara skarmbilder
+        uses: actions/upload-artifact@v4
+        with:
+          name: Balans-iPad-Screenshots
+          path: screenshots/*.png
