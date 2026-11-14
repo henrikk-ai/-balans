@@ -19,6 +19,39 @@
       #steps #b61-health-status { margin: 0 !important; font-size: 12px !important; line-height: 1.5; }
       #steps #b61-health-card .b61-status-label { font-size: 13px; font-weight: 700; color: #173e33; margin-bottom: 3px; }
       #steps #stepsList .b61-date-only small { display: none !important; }
+      /* Statistik: en rad per nyckeltal, med luft mellan etikett och varde. */
+      #steps #b34-steps .b34-stat {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 8px !important;
+        margin: 14px 0 16px !important;
+      }
+      #steps #b34-steps .b34-stat > div {
+        display: flex !important;
+        align-items: baseline !important;
+        justify-content: space-between !important;
+        gap: 16px !important;
+        min-width: 0;
+        padding: 8px 12px !important;
+        border-radius: 10px;
+        background: #f2f6f1;
+      }
+      #steps #b34-steps .b34-stat small {
+        display: block !important;
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: 13px !important;
+        line-height: 1.35;
+        color: #536d5e;
+      }
+      #steps #b34-steps .b34-stat strong {
+        display: block !important;
+        flex: 0 0 auto;
+        font-size: 18px !important;
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+        white-space: nowrap;
+      }
     `;
     document.head.appendChild(style);
   }
