@@ -18,7 +18,7 @@ folder = project.main_group.find_subpath('App', true)
 
 # Kopiera HealthKit-pluginen och bryggcontrollern.
 
-%w[BalansHealthPlugin.swift BalansBridgeViewController.swift].each do |name|
+%w[BalansHealthPlugin.swift BalansPremiumPlugin.swift BalansBridgeViewController.swift].each do |name|
 
   source = "ios-native/#{name}"
 
